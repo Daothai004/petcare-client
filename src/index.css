@@ -1146,3 +1146,13 @@ a {
   color: var(--color-ink-soft);
   margin-bottom: 6px;
 }
+/* Bảng cuộn ngang trên điện thoại, không làm vỡ bố cục trang */
+@media (max-width: 768px) {
+  .admin-table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
