@@ -133,6 +133,8 @@ export const deleteWorkSchedule = (id) => api.delete(`/workschedules/${id}`);
 // Hồ sơ cá nhân của người đang đăng nhập
 export const getProfile = () => api.get("/profile");
 export const updateProfile = (data) => api.put("/profile", data);
-export const changePassword = (data) => api.put("/profile/mat-khau", data);
+
+// Quên mật khẩu (khách hàng): data là { email, soDienThoai, matKhauMoi }
+export const forgotPassword = (data) => api.post("/auth/quen-mat-khau", data);
 
 export default api;

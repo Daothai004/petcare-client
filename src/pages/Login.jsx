@@ -70,9 +70,7 @@ function Login() {
             chỉ hiện hướng dẫn liên hệ - vẫn cần có vì người dùng quên mật khẩu
             là tình huống rất thường gặp, để trống hẳn sẽ gây khó chịu. */}
         <p className="form-helper-link">
-          <a href="mailto:hotro@petcarebooking.vn">
-            Quên mật khẩu hoặc tài khoản?
-          </a>
+          <a href="/quen-mat-khau">Quên mật khẩu?</a>
         </p>
       </div>
     </div>
