@@ -68,7 +68,7 @@ function BookAppointment() {
   // ===== Trường hợp CHƯA đăng nhập: hiện thông báo thân thiện, không gọi API =====
   if (!token) {
     return (
-      <div className="page">
+      <div className="page page-split">
         <h1>Đặt lịch hẹn</h1>
         <div className="alert alert-error">
           Bạn cần đăng nhập để đặt lịch hẹn.{" "}
@@ -81,12 +81,18 @@ function BookAppointment() {
           </Link>
           .
         </div>
+        <img
+          className="page-split-image"
+          src="/img/trangdatlich.jpg"
+          alt="PetCare"
+          onError={(e) => (e.currentTarget.style.display = "none")}
+        />
       </div>
     );
   }
 
   return (
-    <div className="page">
+    <div className="page page-split">
       <h1>Đặt lịch hẹn</h1>
       <div className="form-card">
         {error && <div className="alert alert-error">{error}</div>}
@@ -175,6 +181,12 @@ function BookAppointment() {
           </button>
         </form>
       </div>
+      <img
+        className="page-split-image"
+        src="/img/trangdatlich.jpg"
+        alt="PetCare"
+        onError={(e) => (e.currentTarget.style.display = "none")}
+      />
     </div>
   );
 }

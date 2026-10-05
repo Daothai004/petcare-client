@@ -38,7 +38,7 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="page">
+    <div className="page page-split">
       <h1>Quên mật khẩu</h1>
       <div className="form-card">
         <p style={{ marginTop: 0 }}>
@@ -93,6 +93,12 @@ function ForgotPassword() {
           <a href="/dang-nhap">Quay lại đăng nhập</a>
         </p>
       </div>
+      <img
+        className="page-split-image"
+        src="/img/th.jpg"
+        alt="PetCare"
+        onError={(e) => (e.currentTarget.style.display = "none")}
+      />
     </div>
   );
 }

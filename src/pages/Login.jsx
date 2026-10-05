@@ -34,7 +34,7 @@ function Login() {
   };
 
   return (
-    <div className="page">
+    <div className="page page-split">
       <h1>Đăng nhập</h1>
       <div className="form-card">
         {error && <div className="alert alert-error">{error}</div>}
@@ -73,6 +73,12 @@ function Login() {
           <a href="/quen-mat-khau">Quên mật khẩu?</a>
         </p>
       </div>
+      <img
+        className="page-split-image"
+        src="/img/dangnhap.jpg"
+        alt="PetCare"
+        onError={(e) => (e.currentTarget.style.display = "none")}
+      />
     </div>
   );
 }

@@ -39,7 +39,7 @@ function Register() {
   };
 
   return (
-    <div className="page">
+    <div className="page page-split">
       <h1>Đăng ký tài khoản</h1>
       <div className="form-card">
         {error && <div className="alert alert-error">{error}</div>}
@@ -92,6 +92,12 @@ function Register() {
           </button>
         </form>
       </div>
+      <img
+        className="page-split-image"
+        src="/img/OIP.jpg"
+        alt="PetCare"
+        onError={(e) => (e.currentTarget.style.display = "none")}
+      />
     </div>
   );
 }
