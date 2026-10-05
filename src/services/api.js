@@ -130,5 +130,9 @@ export const createWorkSchedule = (data) => api.post("/workschedules", data);
 export const updateWorkSchedule = (id, data) =>
   api.put(`/workschedules/${id}`, data);
 export const deleteWorkSchedule = (id) => api.delete(`/workschedules/${id}`);
+// Hồ sơ cá nhân của người đang đăng nhập
+export const getProfile = () => api.get("/profile");
+export const updateProfile = (data) => api.put("/profile", data);
+export const changePassword = (data) => api.put("/profile/mat-khau", data);
 
 export default api;

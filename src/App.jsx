@@ -30,6 +30,7 @@ import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import MyOrders from "./pages/MyOrders";
 import OrderPaymentPage from "./pages/OrderPaymentPage";
+import Profile from "./pages/Profile";
 // App.jsx giờ không còn chứa giao diện thật nữa, mà chỉ đóng vai trò
 // "bảng định tuyến" - quyết định địa chỉ (URL) nào thì hiển thị trang (component) nào.
 // Giống như việc quản lý nhiều Form trong 1 project WinForms, nhưng thay vì
@@ -96,6 +97,21 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={["KhachHang"]}>
                       <OrderPaymentPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/ho-so"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={[
+                        "KhachHang",
+                        "NhanVien",
+                        "BacSiThuY",
+                        "QuanTriVien",
+                      ]}
+                    >
+                      <Profile />
                     </ProtectedRoute>
                   }
                 />

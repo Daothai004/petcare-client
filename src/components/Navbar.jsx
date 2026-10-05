@@ -74,7 +74,25 @@ function Navbar() {
 
         {token ? (
           <>
-            <span>Xin chào, {hoTen}</span>
+            <Link
+              to="/ho-so"
+              className="navbar-avatar"
+              onClick={dongMenu}
+              title={hoTen}
+            >
+              <span className="navbar-avatar-icon">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z" />
+                </svg>
+              </span>
+              <span className="navbar-avatar-label">Hồ sơ của tôi</span>
+            </Link>
             <a
               href="#"
               onClick={(e) => {
