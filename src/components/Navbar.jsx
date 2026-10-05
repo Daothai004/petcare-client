@@ -71,7 +71,11 @@ function Navbar() {
             Đơn hàng của tôi
           </Link>
         )}
-
+        {token && vaiTro === "KhachHang" && (
+          <Link to="/phan-hoi" onClick={dongMenu}>
+            Phản hồi
+          </Link>
+        )}
         {token ? (
           <>
             <Link

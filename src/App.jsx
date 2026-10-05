@@ -23,6 +23,7 @@ import AdminProducts from "./pages/Admin/AdminProducts";
 import AdminOrders from "./pages/Admin/AdminOrders";
 import AdminWorkSchedule from "./pages/Admin/AdminWorkSchedule";
 import AdminAllWorkSchedules from "./pages/Admin/AdminAllWorkSchedules";
+import AdminFeedback from "./pages/Admin/AdminFeedback";
 import ChatWidget from "./components/ChatWidget";
 import MyAppointments from "./pages/MyAppointments";
 import PaymentPage from "./pages/PaymentPage";
@@ -32,6 +33,7 @@ import MyOrders from "./pages/MyOrders";
 import OrderPaymentPage from "./pages/OrderPaymentPage";
 import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
+import Feedback from "./pages/Feedback";
 // App.jsx giờ không còn chứa giao diện thật nữa, mà chỉ đóng vai trò
 // "bảng định tuyến" - quyết định địa chỉ (URL) nào thì hiển thị trang (component) nào.
 // Giống như việc quản lý nhiều Form trong 1 project WinForms, nhưng thay vì
@@ -114,6 +116,14 @@ function App() {
                       ]}
                     >
                       <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/phan-hoi"
+                  element={
+                    <ProtectedRoute allowedRoles={["KhachHang"]}>
+                      <Feedback />
                     </ProtectedRoute>
                   }
                 />
@@ -239,6 +249,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["QuanTriVien"]}>
                 <AdminAllWorkSchedules />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="phan-hoi"
+            element={
+              <ProtectedRoute allowedRoles={["QuanTriVien"]}>
+                <AdminFeedback />
               </ProtectedRoute>
             }
           />

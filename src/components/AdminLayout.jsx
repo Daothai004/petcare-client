@@ -82,6 +82,7 @@ function AdminLayout() {
           {isAdmin && <Link to="/admin/thu-cung">Thú cưng</Link>}
           {isAdmin && <Link to="/admin/tai-khoan">Tài khoản nhân viên</Link>}
           {isAdmin && <Link to="/admin/chatbot-logs">Lịch sử Chatbot</Link>}
+          {isAdmin && <Link to="/admin/phan-hoi">Phản hồi</Link>}
         </nav>
 
         <div className="admin-user">

@@ -1465,3 +1465,136 @@ body {
   background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
 }
+/* ===== Phản hồi / đánh giá ===== */
+.star-picker {
+  display: flex;
+  gap: 4px;
+}
+
+.star-picker button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color-line);
+  padding: 0 2px;
+}
+
+.star-picker button.on {
+  color: var(--color-accent);
+}
+
+.stars {
+  color: var(--color-accent);
+  letter-spacing: 2px;
+}
+
+.feedback-type {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.feedback-type button {
+  padding: 8px 16px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-ink-soft);
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.feedback-type button.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.feedback-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+
+.feedback-card h4 {
+  margin: 8px 0 6px;
+  font-size: 1.05rem;
+}
+
+.feedback-card p {
+  margin: 6px 0;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.feedback-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+.fb-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.fb-badge-danhgia {
+  background: #e7efe8;
+  color: var(--color-success);
+}
+
+.fb-badge-khieunai {
+  background: #f7e9e6;
+  color: var(--color-error);
+}
+
+.fb-badge-gopy {
+  background: var(--color-accent-soft);
+  color: var(--color-primary-dark);
+}
+
+.fb-badge-cho {
+  background: #f2efe6;
+  color: var(--color-ink-soft);
+}
+
+.feedback-reply {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--color-bg);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.feedback-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 110px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 10px 12px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  resize: vertical;
+  outline: none;
+}
+
+.feedback-textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}

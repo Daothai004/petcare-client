@@ -137,4 +137,11 @@ export const updateProfile = (data) => api.put("/profile", data);
 // Quên mật khẩu (khách hàng): data là { email, soDienThoai, matKhauMoi }
 export const forgotPassword = (data) => api.post("/auth/quen-mat-khau", data);
 
+// Phản hồi: khách gửi đánh giá/khiếu nại/góp ý, Admin xem và trả lời
+export const createFeedback = (data) => api.post("/feedback", data);
+export const getMyFeedback = () => api.get("/feedback/mine");
+export const getAllFeedback = () => api.get("/feedback");
+export const replyFeedback = (id, traLoi) =>
+  api.put(`/feedback/${id}/tra-loi`, { traLoi });
+
 export default api;

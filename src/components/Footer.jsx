@@ -44,6 +44,9 @@ function Footer() {
               <Link to="/san-pham">Sản phẩm</Link>
             </li>
             <li>
+              <Link to="/phan-hoi">Phản hồi &amp; khiếu nại</Link>
+            </li>
+            <li>
               <Link to="/dang-nhap">Đăng nhập</Link>
             </li>
           </ul>
