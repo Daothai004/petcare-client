@@ -144,4 +144,11 @@ export const getAllFeedback = () => api.get("/feedback");
 export const replyFeedback = (id, traLoi) =>
   api.put(`/feedback/${id}/tra-loi`, { traLoi });
 
+// Kho thuốc, vắc-xin, dụng cụ y tế (Bác sĩ + Admin)
+export const getSupplies = (loai) =>
+  api.get("/supplies", { params: loai ? { loai } : {} });
+export const createSupply = (data) => api.post("/supplies", data);
+export const updateSupply = (id, data) => api.put(`/supplies/${id}`, data);
+export const deleteSupply = (id) => api.delete(`/supplies/${id}`);
+
 export default api;

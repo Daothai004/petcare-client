@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import {
   getPets,
+  getSupplies,
   getVaccinations,
   createVaccination,
   updateVaccination,
@@ -23,9 +24,13 @@ function AdminVaccinations() {
   const [form, setForm] = useState(RONG);
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState(null);
+  const [vacXins, setVacXins] = useState([]);
 
   useEffect(() => {
     getPets().then((res) => setPets(res.data));
+    getSupplies("VacXin")
+      .then((res) => setVacXins(res.data))
+      .catch(() => {});
   }, []);
 
   const loadRecords = (id) => {
@@ -127,11 +132,17 @@ function AdminVaccinations() {
           >
             <input
               name="loaiVaccine"
+              list="ds-vacxin"
               placeholder="Loại vắc-xin (VD: Vaccine dại)"
               value={form.loaiVaccine}
               onChange={handleChange}
               required
             />
+            <datalist id="ds-vacxin">
+              {vacXins.map((v) => (
+                <option key={v.id} value={v.tenVatTu} />
+              ))}
+            </datalist>
             <input
               name="muiSo"
               type="number"

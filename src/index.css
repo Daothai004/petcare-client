@@ -1894,3 +1894,27 @@ body {
     min-height: 240px;
   }
 }
+/* ===== Kho thuốc & vật tư ===== */
+.stock-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stock-ok {
+  background: #e7efe8;
+  color: var(--color-success);
+}
+
+.stock-low {
+  background: var(--color-accent-soft);
+  color: var(--color-primary-dark);
+}
+
+.stock-out {
+  background: #f7e9e6;
+  color: var(--color-error);
+}

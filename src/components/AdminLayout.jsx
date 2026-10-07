@@ -70,6 +70,9 @@ function AdminLayout() {
           {(isBacSi || isAdmin) && (
             <Link to="/admin/phau-thuat">Phẫu thuật</Link>
           )}
+          {(isBacSi || isAdmin) && (
+            <Link to="/admin/kho-vat-tu">Kho thuốc &amp; vật tư</Link>
+          )}
           {(isNhanVien || isAdmin) && (
             <Link to="/admin/san-pham">Sản phẩm</Link>
           )}

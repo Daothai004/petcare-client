@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import {
   getPets,
+  getSupplies,
   getMedicalRecords,
   createMedicalRecord,
 } from "../../services/api";
@@ -14,9 +15,13 @@ function AdminMedicalRecords() {
   const [records, setRecords] = useState([]);
   const [form, setForm] = useState(RONG);
   const [error, setError] = useState(null);
+  const [thuocs, setThuocs] = useState([]);
 
   useEffect(() => {
     getPets().then((res) => setPets(res.data));
+    getSupplies("Thuoc")
+      .then((res) => setThuocs(res.data))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -83,10 +88,16 @@ function AdminMedicalRecords() {
             />
             <input
               name="thuocKeDon"
+              list="ds-thuoc"
               placeholder="Thuốc kê đơn"
               value={form.thuocKeDon}
               onChange={handleChange}
             />
+            <datalist id="ds-thuoc">
+              {thuocs.map((v) => (
+                <option key={v.id} value={v.tenVatTu} />
+              ))}
+            </datalist>
             <input
               name="ghiChu"
               placeholder="Ghi chú"

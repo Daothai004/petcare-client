@@ -24,6 +24,7 @@ import AdminOrders from "./pages/Admin/AdminOrders";
 import AdminWorkSchedule from "./pages/Admin/AdminWorkSchedule";
 import AdminAllWorkSchedules from "./pages/Admin/AdminAllWorkSchedules";
 import AdminFeedback from "./pages/Admin/AdminFeedback";
+import AdminSupplies from "./pages/Admin/AdminSupplies";
 import ChatWidget from "./components/ChatWidget";
 import MyAppointments from "./pages/MyAppointments";
 import PaymentPage from "./pages/PaymentPage";
@@ -219,6 +220,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["BacSiThuY", "QuanTriVien"]}>
                 <AdminSurgeries />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="kho-vat-tu"
+            element={
+              <ProtectedRoute allowedRoles={["BacSiThuY", "QuanTriVien"]}>
+                <AdminSupplies />
               </ProtectedRoute>
             }
           />
