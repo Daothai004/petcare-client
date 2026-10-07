@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getServices } from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 
 function Navbar() {
@@ -7,6 +8,14 @@ function Navbar() {
   const hoTen = localStorage.getItem("hoTen");
   const vaiTro = localStorage.getItem("vaiTro");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dichVu, setDichVu] = useState([]);
+  const [dichVuOpen, setDichVuOpen] = useState(false);
+
+  useEffect(() => {
+    getServices()
+      .then((res) => setDichVu(res.data))
+      .catch(() => {});
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -14,7 +23,10 @@ function Navbar() {
     window.location.reload();
   };
 
-  const dongMenu = () => setMenuOpen(false);
+  const dongMenu = () => {
+    setMenuOpen(false);
+    setDichVuOpen(false);
+  };
 
   return (
     <nav className="navbar">
@@ -49,6 +61,31 @@ function Navbar() {
         <Link to="/" onClick={dongMenu}>
           Trang chủ
         </Link>
+        <div
+          className="navbar-dropdown"
+          onMouseEnter={() => setDichVuOpen(true)}
+          onMouseLeave={() => setDichVuOpen(false)}
+        >
+          <button
+            type="button"
+            className="navbar-dropdown-toggle"
+            onClick={() => setDichVuOpen(true)}
+          >
+            Dịch vụ
+          </button>
+          {dichVuOpen && (
+            <div className="navbar-dropdown-menu">
+              {dichVu.map((s) => (
+                <Link key={s.id} to={`/dich-vu/${s.id}`} onClick={dongMenu}>
+                  {s.tenDichVu}
+                </Link>
+              ))}
+              {dichVu.length === 0 && (
+                <span className="navbar-dropdown-empty">Đang tải...</span>
+              )}
+            </div>
+          )}
+        </div>
         <Link to="/dat-lich" onClick={dongMenu}>
           Đặt lịch
         </Link>

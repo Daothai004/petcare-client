@@ -143,6 +143,7 @@ function Home() {
                 {Number(s.gia).toLocaleString("vi-VN")} đ
               </span>
               <Link to="/dat-lich">Đặt lịch dịch vụ này →</Link>
+              <Link to={`/dich-vu/${s.id}`}>Xem chi tiết →</Link>
             </div>
           ))}
         </div>

@@ -1598,3 +1598,299 @@ body {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
+/* ===== Dropdown "Dịch vụ" trên Navbar ===== */
+.navbar-dropdown {
+  position: relative;
+}
+
+.navbar-dropdown-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: inherit;
+  color: var(--color-ink-soft);
+  padding: 0 0 4px;
+  border-bottom: 2px solid transparent;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.navbar-dropdown-toggle:hover {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-accent);
+}
+
+.navbar-caret {
+  font-size: 0.75rem;
+}
+
+.navbar-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: -12px;
+  min-width: 250px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+}
+
+.navbar-links .navbar-dropdown-menu a {
+  padding: 10px 14px;
+  border-bottom: none;
+  border-radius: 8px;
+}
+
+.navbar-links .navbar-dropdown-menu a:hover {
+  background: var(--color-accent-soft);
+}
+
+.navbar-dropdown-empty {
+  padding: 10px 14px;
+  color: var(--color-ink-soft);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .navbar-dropdown-menu {
+    position: static;
+    min-width: 0;
+    box-shadow: none;
+    border: none;
+    padding: 4px 0 4px 12px;
+  }
+}
+
+/* ===== Trang chi tiết dịch vụ ===== */
+.sd-hero {
+  position: relative;
+  min-height: 320px;
+  display: flex;
+  align-items: flex-end;
+  background: var(--color-primary-dark);
+  overflow: hidden;
+}
+
+.sd-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sd-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(22, 58, 51, 0.85),
+    rgba(22, 58, 51, 0.25)
+  );
+}
+
+.sd-hero-text {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px 36px;
+  color: #fff;
+}
+
+.sd-hero-text h1 {
+  color: #fff;
+  margin: 8px 0;
+}
+
+.sd-hero-text p {
+  margin: 0;
+  max-width: 640px;
+  line-height: 1.6;
+}
+
+.sd-breadcrumb {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.sd-breadcrumb a {
+  color: #fff;
+}
+
+.sd-body {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 40px;
+  align-items: start;
+}
+
+.sd-main h2 {
+  margin: 32px 0 12px;
+}
+
+.sd-main h2:first-child {
+  margin-top: 0;
+}
+
+.sd-main p {
+  line-height: 1.7;
+}
+
+.sd-steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+}
+
+.sd-steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 18px 52px;
+  line-height: 1.6;
+}
+
+.sd-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.sd-steps strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.sd-check,
+.sd-notes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sd-check li,
+.sd-notes li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.sd-check li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.sd-notes li::before {
+  content: "!";
+  position: absolute;
+  left: 4px;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.sd-faq details {
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  background: var(--color-surface);
+}
+
+.sd-faq summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sd-faq details p {
+  margin: 10px 0 0;
+}
+
+.sd-side {
+  position: sticky;
+  top: 24px;
+}
+
+.sd-price-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.sd-price-label {
+  color: var(--color-ink-soft);
+  font-size: 0.9rem;
+}
+
+.sd-price {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--color-primary);
+}
+
+.sd-btn {
+  display: block;
+  text-align: center;
+  background: var(--color-accent);
+  color: var(--color-primary-dark);
+  font-weight: 700;
+  padding: 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-top: 6px;
+}
+
+.sd-btn:hover {
+  filter: brightness(0.95);
+}
+
+.sd-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .sd-body {
+    grid-template-columns: 1fr;
+  }
+  .sd-side {
+    position: static;
+    order: -1;
+  }
+  .sd-hero {
+    min-height: 240px;
+  }
+}
