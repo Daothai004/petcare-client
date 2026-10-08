@@ -1,5 +1,6 @@
 // trang quản lý lịch hẹn
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getAppointments, updateAppointmentStatus } from "../../services/api";
 
 const TEN_TRANG_THAI = {
@@ -62,6 +63,9 @@ function AdminAppointments() {
                 <td>{TEN_TRANG_THAI[lh.trangThai]}</td>
                 {coQuyenCapNhat && (
                   <td className="admin-table-actions">
+                    <Link to={`/admin/hoa-don/${lh.id}`} className="btn-small">
+                      Biên lai
+                    </Link>
                     {lh.trangThai === 0 && (
                       <button
                         className="btn-small"

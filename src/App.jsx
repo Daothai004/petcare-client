@@ -25,6 +25,7 @@ import AdminWorkSchedule from "./pages/Admin/AdminWorkSchedule";
 import AdminAllWorkSchedules from "./pages/Admin/AdminAllWorkSchedules";
 import AdminFeedback from "./pages/Admin/AdminFeedback";
 import AdminSupplies from "./pages/Admin/AdminSupplies";
+import AdminInvoice from "./pages/Admin/AdminInvoice";
 import ChatWidget from "./components/ChatWidget";
 import MyAppointments from "./pages/MyAppointments";
 import PaymentPage from "./pages/PaymentPage";
@@ -228,6 +229,16 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["BacSiThuY", "QuanTriVien"]}>
                 <AdminSupplies />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="hoa-don/:id"
+            element={
+              <ProtectedRoute
+                allowedRoles={["NhanVien", "BacSiThuY", "QuanTriVien"]}
+              >
+                <AdminInvoice />
               </ProtectedRoute>
             }
           />

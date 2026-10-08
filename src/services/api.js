@@ -151,4 +151,11 @@ export const createSupply = (data) => api.post("/supplies", data);
 export const updateSupply = (id, data) => api.put(`/supplies/${id}`, data);
 export const deleteSupply = (id) => api.delete(`/supplies/${id}`);
 
+// Biên lai lịch hẹn
+export const getInvoice = (lichHenId) => api.get(`/invoices/${lichHenId}`);
+export const addInvoiceItem = (lichHenId, data) =>
+  api.post(`/invoices/${lichHenId}/items`, data);
+export const deleteInvoiceItem = (itemId) =>
+  api.delete(`/invoices/items/${itemId}`);
+
 export default api;

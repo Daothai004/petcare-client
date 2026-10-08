@@ -62,15 +62,23 @@ function MyAppointments() {
                 <td>{TEN_TRANG_THAI[lh.trangThai]}</td>
                 <td>
                   {lh.daThanhToan ? (
-                    <span
-                      style={{ color: "var(--color-success)", fontWeight: 600 }}
-                    >
-                      Đã thanh toán
-                    </span>
+                    <>
+                      <span
+                        style={{
+                          color: "var(--color-success)",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Đã thanh toán
+                      </span>{" "}
+                      <Link to={`/thanh-toan/${lh.id}`} className="btn-small">
+                        Xem biên lai
+                      </Link>
+                    </>
                   ) : (
                     lh.trangThai !== 3 && (
                       <Link to={`/thanh-toan/${lh.id}`} className="btn-small">
-                        Thanh toán
+                        Xem biên lai &amp; thanh toán
                       </Link>
                     )
                   )}
