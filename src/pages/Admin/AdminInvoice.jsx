@@ -125,7 +125,11 @@ function AdminInvoice() {
             hoaDon={hoaDon}
             onXoaKhoan={hoaDon.daThanhToan ? null : handleXoaKhoan}
           />
-
+          <p className="no-print">
+            <button className="btn-small" onClick={() => window.print()}>
+              In hóa đơn
+            </button>
+          </p>
           {hoaDon.daThanhToan ? (
             <div className="alert alert-error">
               Hóa đơn đã thanh toán nên đã được chốt, không thể thêm hoặc xóa
@@ -143,7 +147,10 @@ function AdminInvoice() {
                 khoản phát sinh như thuốc, vắc-xin, dụng cụ y tế cho dịch vụ do
                 bạn phụ trách.
               </p>
-              <form onSubmit={handleSubmit} className="admin-inline-form">
+              <form
+                onSubmit={handleSubmit}
+                className="admin-inline-form no-print"
+              >
                 <select
                   name="lichHenId"
                   value={form.lichHenId}
@@ -204,7 +211,7 @@ function AdminInvoice() {
         </>
       )}
 
-      <p style={{ marginTop: 16 }}>
+      <p className="no-print" style={{ marginTop: 16 }}>
         <Link to="/admin/lich-hen">← Quay lại Quản lý lịch hẹn</Link>
       </p>
     </div>

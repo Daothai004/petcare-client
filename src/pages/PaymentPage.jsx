@@ -82,7 +82,7 @@ function PaymentPage() {
   const khongCoKhoan = hoaDon.chiTiet.length === 0;
 
   return (
-    <div className="page">
+    <div className="page khach-khong-in">
       <h1>
         {hoaDon.daThanhToan ? "Hóa đơn" : "Hóa đơn & thanh toán"} #{id}
       </h1>
@@ -90,11 +90,9 @@ function PaymentPage() {
       <HoaDonView hoaDon={hoaDon} />
 
       {hoaDon.daThanhToan && (
-        <div className="alert alert-success no-print">
-          Hóa đơn này đã được thanh toán.{" "}
-          <button className="btn-small" onClick={() => window.print()}>
-            In hóa đơn
-          </button>
+        <div className="alert alert-success">
+          Hóa đơn này đã được thanh toán. Nếu cần bản in, vui lòng liên hệ nhân
+          viên tại quầy.
         </div>
       )}
 

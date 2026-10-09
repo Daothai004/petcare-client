@@ -2029,3 +2029,32 @@ body {
 .invoice-subtotal td:first-child {
   text-align: right;
 }
+/* ===== In hóa đơn: chỉ nhân viên in được ===== */
+@media print {
+  .admin-mobile-bar,
+  .admin-sidebar-overlay {
+    display: none !important;
+  }
+
+  .admin-layout {
+    display: block !important;
+  }
+
+  .admin-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Trang hóa đơn phía khách: bản in chỉ ra một dòng thông báo */
+  .khach-khong-in > * {
+    display: none !important;
+  }
+
+  .khach-khong-in::before {
+    content: "Hóa đơn chỉ được in bởi nhân viên tại quầy.";
+    display: block;
+    padding: 40px;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+}
