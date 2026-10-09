@@ -1,13 +1,13 @@
-// trang thanh toán
+// Trang hóa đơn + thanh toán (id trên đường dẫn là mã HÓA ĐƠN)
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { thanhToanLichHen, getInvoice } from "../services/api";
-import InvoiceTable from "../components/InvoiceTable";
+import { thanhToanHoaDon, getHoaDon } from "../services/api";
+import HoaDonView from "../components/HoaDonView";
 
 function PaymentPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [invoice, setInvoice] = useState(null);
+  const [hoaDon, setHoaDon] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [form, setForm] = useState({ soThe: "", tenChuThe: "" });
   const [loading, setLoading] = useState(false);
@@ -15,10 +15,10 @@ function PaymentPage() {
   const [thanhCong, setThanhCong] = useState(false);
 
   useEffect(() => {
-    getInvoice(id)
-      .then((res) => setInvoice(res.data))
+    getHoaDon(id)
+      .then((res) => setHoaDon(res.data))
       .catch((err) =>
-        setLoadError(err.response?.data?.message || "Không tải được biên lai."),
+        setLoadError(err.response?.data?.message || "Không tải được hóa đơn."),
       );
   }, [id]);
 
@@ -31,7 +31,7 @@ function PaymentPage() {
     setLoading(true);
     try {
       await new Promise((r) => setTimeout(r, 900));
-      await thanhToanLichHen(id);
+      await thanhToanHoaDon(id);
       setThanhCong(true);
       setTimeout(() => navigate("/lich-hen-cua-toi"), 2200);
     } catch (err) {
@@ -45,22 +45,22 @@ function PaymentPage() {
   if (loadError) {
     return (
       <div className="page">
-        <h1>Biên lai lịch hẹn #{id}</h1>
+        <h1>Hóa đơn #{id}</h1>
         <div className="alert alert-error">{loadError}</div>
         <Link to="/lich-hen-cua-toi">← Quay lại Lịch hẹn của tôi</Link>
       </div>
     );
   }
 
-  if (!invoice) {
+  if (!hoaDon) {
     return (
       <div className="page">
-        <p>Đang tải biên lai...</p>
+        <p>Đang tải hóa đơn...</p>
       </div>
     );
   }
 
-  const tongText = `${Number(invoice.tongCong).toLocaleString("vi-VN")} đ`;
+  const tongText = `${Number(hoaDon.tongCong).toLocaleString("vi-VN")} đ`;
 
   if (thanhCong) {
     return (
@@ -69,7 +69,7 @@ function PaymentPage() {
           <div className="payment-success-icon">✓</div>
           <h2>Thanh toán thành công</h2>
           <p>
-            Đã thanh toán {tongText} cho lịch hẹn #{id}.
+            Đã thanh toán {tongText} cho hóa đơn #{id}.
           </p>
           <p style={{ fontSize: "0.85rem", color: "var(--color-ink-soft)" }}>
             Đang chuyển về trang Lịch hẹn của tôi...
@@ -79,37 +79,40 @@ function PaymentPage() {
     );
   }
 
-  const daHuy = invoice.trangThai === 3;
+  const khongCoKhoan = hoaDon.chiTiet.length === 0;
 
   return (
     <div className="page">
       <h1>
-        {invoice.daThanhToan ? "Biên lai" : "Biên lai & thanh toán"} #{id}
+        {hoaDon.daThanhToan ? "Hóa đơn" : "Hóa đơn & thanh toán"} #{id}
       </h1>
 
-      <InvoiceTable invoice={invoice} />
+      <HoaDonView hoaDon={hoaDon} />
 
-      {invoice.daThanhToan && (
+      {hoaDon.daThanhToan && (
         <div className="alert alert-success no-print">
-          Lịch hẹn này đã được thanh toán.{" "}
+          Hóa đơn này đã được thanh toán.{" "}
           <button className="btn-small" onClick={() => window.print()}>
-            In biên lai
+            In hóa đơn
           </button>
         </div>
       )}
 
-      {daHuy && !invoice.daThanhToan && (
+      {!hoaDon.daThanhToan && khongCoKhoan && (
         <div className="alert alert-error">
-          Lịch hẹn đã bị hủy nên không thể thanh toán.
+          Hóa đơn chưa có khoản nào cần thanh toán (các lịch hẹn có thể đã bị
+          hủy).
         </div>
       )}
 
-      {!invoice.daThanhToan && !daHuy && (
+      {!hoaDon.daThanhToan && !khongCoKhoan && (
         <div className="no-print">
           <p style={{ color: "var(--color-ink-soft)", fontSize: "0.9rem" }}>
-            Bác sĩ hoặc nhân viên có thể bổ sung thuốc, sản phẩm... vào biên lai
-            trong quá trình phục vụ. Bạn nên thanh toán sau khi dịch vụ hoàn tất
-            để có số tiền cuối cùng.
+            Bác sĩ hoặc nhân viên có thể bổ sung thuốc, vật tư vào hóa đơn trong
+            quá trình phục vụ, nên bạn thanh toán sau khi dịch vụ hoàn tất để có
+            số tiền cuối cùng. Muốn mua thêm sản phẩm và thanh toán chung,{" "}
+            <Link to="/san-pham">chọn sản phẩm</Link> rồi ở bước đặt hàng chọn{" "}
+            <strong>&quot;Gộp vào hóa đơn #{id}&quot;</strong>.
           </p>
 
           <div className="form-card" style={{ maxWidth: "none" }}>

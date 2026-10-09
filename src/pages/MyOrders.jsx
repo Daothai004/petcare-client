@@ -76,7 +76,11 @@ function MyOrders() {
                   ) : dh.hinhThucThanhToan === "Online" &&
                     dh.trangThai !== 3 ? (
                     <Link
-                      to={`/thanh-toan-don-hang/${dh.id}`}
+                      to={
+                        dh.hoaDonId
+                          ? `/thanh-toan/${dh.hoaDonId}`
+                          : `/thanh-toan-don-hang/${dh.id}`
+                      }
                       className="btn-small"
                     >
                       Thanh toán

@@ -158,4 +158,12 @@ export const addInvoiceItem = (lichHenId, data) =>
 export const deleteInvoiceItem = (itemId) =>
   api.delete(`/invoices/items/${itemId}`);
 
+// Hóa đơn gộp (nhiều dịch vụ + sản phẩm)
+export const datNhieuDichVu = (data) => api.post("/hoadon/dat-lich", data);
+export const getMyInvoices = () => api.get("/hoadon/mine");
+export const getHoaDon = (id) => api.get(`/hoadon/${id}`);
+export const thanhToanHoaDon = (id) => api.put(`/hoadon/${id}/thanh-toan`);
+export const taoHoaDonTuLichHen = (lichHenId) =>
+  api.post(`/hoadon/tu-lich-hen/${lichHenId}`);
+
 export default api;

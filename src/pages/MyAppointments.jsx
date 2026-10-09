@@ -1,7 +1,11 @@
 // trang lịch hẹn cho khách hàng
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getMyAppointments, cancelAppointment } from "../services/api";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  getMyAppointments,
+  cancelAppointment,
+  taoHoaDonTuLichHen,
+} from "../services/api";
 
 const TEN_TRANG_THAI = {
   0: "Chờ xác nhận",
@@ -11,6 +15,21 @@ const TEN_TRANG_THAI = {
 };
 
 function MyAppointments() {
+  const navigate = useNavigate();
+
+  // Mở hóa đơn gộp của lịch hẹn (lịch hẹn cũ chưa có hóa đơn thì tạo mới)
+  const moHoaDon = async (lh) => {
+    try {
+      let hoaDonId = lh.hoaDonId;
+      if (!hoaDonId) {
+        const res = await taoHoaDonTuLichHen(lh.id);
+        hoaDonId = res.data.hoaDonId;
+      }
+      navigate(`/thanh-toan/${hoaDonId}`);
+    } catch (err) {
+      alert(err.response?.data?.message || "Không mở được hóa đơn.");
+    }
+  };
   const [list, setList] = useState([]);
   const [error, setError] = useState(null);
 
@@ -71,15 +90,21 @@ function MyAppointments() {
                       >
                         Đã thanh toán
                       </span>{" "}
-                      <Link to={`/thanh-toan/${lh.id}`} className="btn-small">
-                        Xem biên lai
-                      </Link>
+                      <button
+                        className="btn-small"
+                        onClick={() => moHoaDon(lh)}
+                      >
+                        Xem hóa đơn
+                      </button>
                     </>
                   ) : (
                     lh.trangThai !== 3 && (
-                      <Link to={`/thanh-toan/${lh.id}`} className="btn-small">
-                        Xem biên lai &amp; thanh toán
-                      </Link>
+                      <button
+                        className="btn-small"
+                        onClick={() => moHoaDon(lh)}
+                      >
+                        Xem hóa đơn &amp; thanh toán
+                      </button>
                     )
                   )}
                 </td>

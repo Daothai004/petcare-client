@@ -1,7 +1,7 @@
-// trang giỏ hàng + đặt hàng
+// trang giỏ hàng + đặt hàng (có thể gộp vào hóa đơn dịch vụ)
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { getPublicProducts, createOrder } from "../services/api";
+import { getPublicProducts, createOrder, getMyInvoices } from "../services/api";
 import {
   getCartItems,
   updateCartQty,
@@ -16,12 +16,27 @@ function Cart() {
   const [diaChiNhan, setDiaChiNhan] = useState("");
   const [ghiChu, setGhiChu] = useState("");
   const [hinhThucThanhToan, setHinhThucThanhToan] = useState("COD");
+  const [hoaDons, setHoaDons] = useState([]); // hóa đơn chưa thanh toán của khách
+  const [hoaDonId, setHoaDonId] = useState(""); // "" = thanh toán riêng
   const [error, setError] = useState(null);
   const [dangGui, setDangGui] = useState(false);
 
   useEffect(() => {
     setItems(getCartItems());
     getPublicProducts().then((res) => setProducts(res.data));
+
+    // Khách đã đăng nhập: lấy các hóa đơn chưa thanh toán để gợi ý gộp
+    if (localStorage.getItem("token")) {
+      getMyInvoices()
+        .then((res) => {
+          const chuaTra = res.data.filter(
+            (h) => !h.daThanhToan && (h.dichVu.length > 0 || h.soDonHang > 0),
+          );
+          setHoaDons(chuaTra);
+          if (chuaTra.length > 0) setHoaDonId(String(chuaTra[0].id));
+        })
+        .catch(() => {});
+    }
   }, []);
 
   const chiTiet = items
@@ -61,14 +76,17 @@ function Cart() {
       const res = await createOrder({
         diaChiNhan,
         ghiChu,
-        hinhThucThanhToan,
+        hinhThucThanhToan: hoaDonId ? "Online" : hinhThucThanhToan,
+        hoaDonId: hoaDonId ? Number(hoaDonId) : null,
         items: chiTiet.map((i) => ({
           sanPhamId: i.sanPhamId,
           soLuong: i.soLuong,
         })),
       });
       clearCart();
-      if (hinhThucThanhToan === "Online") {
+      if (hoaDonId) {
+        navigate(`/thanh-toan/${hoaDonId}`);
+      } else if (hinhThucThanhToan === "Online") {
         navigate(`/thanh-toan-don-hang/${res.data.id}`);
       } else {
         navigate("/don-hang-cua-toi");
@@ -136,7 +154,7 @@ function Cart() {
             </tbody>
           </table>
 
-          <h3>Tổng tiền: {tongTien.toLocaleString("vi-VN")}đ</h3>
+          <h3>Tổng tiền sản phẩm: {tongTien.toLocaleString("vi-VN")}đ</h3>
 
           <form
             onSubmit={handleSubmit}
@@ -160,33 +178,60 @@ function Cart() {
                 onChange={(e) => setGhiChu(e.target.value)}
               />
             </div>
-            <div className="form-field">
-              <label>Hình thức thanh toán</label>
-              <div style={{ display: "flex", gap: 16 }}>
-                <label style={{ fontWeight: 400 }}>
-                  <input
-                    type="radio"
-                    name="hinhThucThanhToan"
-                    value="COD"
-                    checked={hinhThucThanhToan === "COD"}
-                    onChange={(e) => setHinhThucThanhToan(e.target.value)}
-                  />{" "}
-                  Thanh toán khi nhận hàng (COD)
-                </label>
-                <label style={{ fontWeight: 400 }}>
-                  <input
-                    type="radio"
-                    name="hinhThucThanhToan"
-                    value="Online"
-                    checked={hinhThucThanhToan === "Online"}
-                    onChange={(e) => setHinhThucThanhToan(e.target.value)}
-                  />{" "}
-                  Thanh toán online
-                </label>
+
+            {hoaDons.length > 0 && (
+              <div className="form-field">
+                <label htmlFor="hoaDonId">Thanh toán</label>
+                <select
+                  id="hoaDonId"
+                  value={hoaDonId}
+                  onChange={(e) => setHoaDonId(e.target.value)}
+                >
+                  {hoaDons.map((h) => (
+                    <option key={h.id} value={h.id}>
+                      Gộp vào hóa đơn #{h.id}
+                      {h.dichVu.length > 0 ? ` (${h.dichVu.join(", ")})` : ""}
+                    </option>
+                  ))}
+                  <option value="">Thanh toán riêng cho đơn hàng này</option>
+                </select>
               </div>
-            </div>
+            )}
+
+            {!hoaDonId && (
+              <div className="form-field">
+                <label>Hình thức thanh toán</label>
+                <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                  <label style={{ fontWeight: 400 }}>
+                    <input
+                      type="radio"
+                      name="hinhThucThanhToan"
+                      value="COD"
+                      checked={hinhThucThanhToan === "COD"}
+                      onChange={(e) => setHinhThucThanhToan(e.target.value)}
+                    />{" "}
+                    Thanh toán khi nhận hàng (COD)
+                  </label>
+                  <label style={{ fontWeight: 400 }}>
+                    <input
+                      type="radio"
+                      name="hinhThucThanhToan"
+                      value="Online"
+                      checked={hinhThucThanhToan === "Online"}
+                      onChange={(e) => setHinhThucThanhToan(e.target.value)}
+                    />{" "}
+                    Thanh toán online
+                  </label>
+                </div>
+              </div>
+            )}
+
             <button type="submit" className="btn-accent" disabled={dangGui}>
-              {dangGui ? "Đang đặt hàng..." : "Đặt hàng"}
+              {dangGui
+                ? "Đang đặt hàng..."
+                : hoaDonId
+                  ? "Đặt hàng và xem hóa đơn"
+                  : "Đặt hàng"}
             </button>
           </form>
         </>

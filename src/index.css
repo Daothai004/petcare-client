@@ -1974,3 +1974,58 @@ body {
     background: #fff;
   }
 }
+/* ===== Đặt nhiều dịch vụ ===== */
+.book-service {
+  border: 1px solid var(--color-line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: var(--color-bg);
+}
+
+.book-service-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.book-service-name {
+  font-weight: 600;
+}
+
+.book-service-meta {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+.book-service .form-field {
+  margin: 10px 0 0;
+}
+
+.book-summary {
+  background: var(--color-accent-soft);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 0.92rem;
+}
+
+/* ===== Biên lai gộp ===== */
+.invoice-group td {
+  background: var(--color-bg);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.invoice-subtotal td {
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+
+.invoice-subtotal td:first-child {
+  text-align: right;
+}
