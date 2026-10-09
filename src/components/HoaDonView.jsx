@@ -16,7 +16,7 @@ const TEN_LOAI = {
 
 const tien = (n) => `${Number(n).toLocaleString("vi-VN")} đ`;
 
-function HoaDonView({ hoaDon }) {
+function HoaDonView({ hoaDon, onXoaKhoan }) {
   return (
     <div className="invoice">
       <div className="invoice-head">
@@ -24,6 +24,12 @@ function HoaDonView({ hoaDon }) {
           <span>Mã hóa đơn</span>#{hoaDon.id}
         </div>
         <div>
+          {hoaDon.tenKhach && (
+            <div>
+              <span>Khách hàng</span>
+              {hoaDon.tenKhach}
+            </div>
+          )}
           <span>Ngày tạo</span>
           {new Date(hoaDon.ngayTao).toLocaleString("vi-VN")}
         </div>
@@ -68,6 +74,15 @@ function HoaDonView({ hoaDon }) {
                         {n.khoa === "KhoanThu"
                           ? `${TEN_LOAI[d.loai] || d.loai} · ${d.moTa}`
                           : d.moTa}
+                        {onXoaKhoan && d.xoaDuoc && (
+                          <button
+                            className="btn-small btn-danger no-print"
+                            style={{ marginLeft: 8 }}
+                            onClick={() => onXoaKhoan(d.id)}
+                          >
+                            Xóa
+                          </button>
+                        )}
                       </td>
                       <td className="invoice-num">{d.soLuong}</td>
                       <td className="invoice-num">{tien(d.donGia)}</td>

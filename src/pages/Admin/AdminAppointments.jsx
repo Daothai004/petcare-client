@@ -1,6 +1,7 @@
 // trang quản lý lịch hẹn
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { taoHoaDonTuLichHen } from "../../services/api";
 import { getAppointments, updateAppointmentStatus } from "../../services/api";
 
 const TEN_TRANG_THAI = {
@@ -11,6 +12,21 @@ const TEN_TRANG_THAI = {
 };
 
 function AdminAppointments() {
+  const navigate = useNavigate();
+
+  // Mở hóa đơn gộp của lịch hẹn (lịch hẹn cũ chưa có hóa đơn thì tạo mới)
+  const moHoaDon = async (lh) => {
+    try {
+      let hoaDonId = lh.hoaDonId;
+      if (!hoaDonId) {
+        const res = await taoHoaDonTuLichHen(lh.id);
+        hoaDonId = res.data.hoaDonId;
+      }
+      navigate(`/admin/hoa-don/${hoaDonId}`);
+    } catch (err) {
+      alert(err.response?.data?.message || "Không mở được hóa đơn.");
+    }
+  };
   // Nhân viên, Bác sĩ và Admin đều được xác nhận / hoàn tất / hủy lịch hẹn
   const coQuyenCapNhat = ["NhanVien", "BacSiThuY", "QuanTriVien"].includes(
     localStorage.getItem("vaiTro"),
@@ -63,9 +79,9 @@ function AdminAppointments() {
                 <td>{TEN_TRANG_THAI[lh.trangThai]}</td>
                 {coQuyenCapNhat && (
                   <td className="admin-table-actions">
-                    <Link to={`/admin/hoa-don/${lh.id}`} className="btn-small">
-                      Biên lai
-                    </Link>
+                    <button className="btn-small" onClick={() => moHoaDon(lh)}>
+                      Hóa đơn{lh.hoaDonId ? ` #${lh.hoaDonId}` : ""}
+                    </button>
                     {lh.trangThai === 0 && (
                       <button
                         className="btn-small"
