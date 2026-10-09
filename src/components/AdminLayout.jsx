@@ -73,6 +73,7 @@ function AdminLayout() {
           {(isBacSi || isAdmin) && (
             <Link to="/admin/kho-vat-tu">Kho thuốc &amp; vật tư</Link>
           )}
+          <Link to="/admin/bao-cao">Báo cáo &amp; Excel</Link>
           {(isNhanVien || isAdmin) && (
             <Link to="/admin/san-pham">Sản phẩm</Link>
           )}

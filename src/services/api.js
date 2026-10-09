@@ -166,4 +166,10 @@ export const thanhToanHoaDon = (id) => api.put(`/hoadon/${id}/thanh-toan`);
 export const taoHoaDonTuLichHen = (lichHenId) =>
   api.post(`/hoadon/tu-lich-hen/${lichHenId}`);
 
+// Dữ liệu báo cáo xuất Excel
+export const getBaoCaoLichHen = (tuNgay, denNgay) =>
+  api.get("/baocao/so-lich-hen", { params: { tuNgay, denNgay } });
+export const getBaoCaoHoaDon = (tuNgay, denNgay) =>
+  api.get("/baocao/hoa-don", { params: { tuNgay, denNgay } });
+
 export default api;

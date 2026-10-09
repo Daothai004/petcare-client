@@ -10,6 +10,7 @@ import {
   getSupplies,
 } from "../../services/api";
 import HoaDonView from "../../components/HoaDonView";
+import { xuatExcel, ngayGio } from "../../utils/excel";
 
 const LOAI = {
   Thuoc: "Thuốc",
@@ -109,7 +110,50 @@ function AdminInvoice() {
     form.loai === "SanPham"
       ? products.map((p) => p.tenSanPham)
       : supplies.filter((s) => s.loai === form.loai).map((s) => s.tenVatTu);
-
+  // Xuất hóa đơn ra Excel để nhân viên đối chiếu (NV_BM 2 / BS_BM 3)
+  const xuatExcelHoaDon = async () => {
+    const TEN_NHOM = {
+      DichVu: "Dịch vụ",
+      KhoanThu: "Thuốc, vật tư & phát sinh",
+      SanPham: "Sản phẩm",
+    };
+    await xuatExcel(`Hoa-don-${hoaDon.id}`, [
+      {
+        ten: `Hóa đơn ${hoaDon.id}`,
+        tieuDe: `PHIẾU THANH TOÁN - HÓA ĐƠN #${hoaDon.id}`,
+        phuDe: `Khách hàng: ${hoaDon.tenKhach ?? ""} | Ngày tạo: ${ngayGio(hoaDon.ngayTao)} | ${hoaDon.daThanhToan ? "Đã thanh toán" : "Chưa thanh toán"}`,
+        cot: [
+          { tieuDe: "STT", khoa: "stt", rong: 6 },
+          { tieuDe: "Nhóm", khoa: "nhom", rong: 24 },
+          { tieuDe: "Khoản thu", khoa: "tenKhoan", rong: 30 },
+          { tieuDe: "Chi tiết", khoa: "moTa", rong: 44 },
+          { tieuDe: "SL", khoa: "soLuong", rong: 8, dinhDang: "0" },
+          {
+            tieuDe: "Đơn giá (đ)",
+            khoa: "donGia",
+            rong: 16,
+            dinhDang: "#,##0",
+          },
+          {
+            tieuDe: "Thành tiền (đ)",
+            khoa: "thanhTien",
+            rong: 18,
+            dinhDang: "#,##0",
+          },
+        ],
+        dong: hoaDon.chiTiet.map((d, i) => ({
+          stt: i + 1,
+          nhom: TEN_NHOM[d.nhom],
+          tenKhoan: d.tenKhoan,
+          moTa: d.moTa,
+          soLuong: d.soLuong,
+          donGia: Number(d.donGia),
+          thanhTien: Number(d.thanhTien),
+        })),
+        tong: ["thanhTien"],
+      },
+    ]);
+  };
   const dichVuSua = hoaDon
     ? hoaDon.danhSachDichVu.filter((d) => d.quanLyDuoc && d.trangThai !== 3)
     : [];
@@ -128,6 +172,9 @@ function AdminInvoice() {
           <p className="no-print">
             <button className="btn-small" onClick={() => window.print()}>
               In hóa đơn
+            </button>{" "}
+            <button className="btn-small" onClick={xuatExcelHoaDon}>
+              Xuất Excel
             </button>
           </p>
           {hoaDon.daThanhToan ? (

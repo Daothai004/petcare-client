@@ -26,6 +26,7 @@ import AdminAllWorkSchedules from "./pages/Admin/AdminAllWorkSchedules";
 import AdminFeedback from "./pages/Admin/AdminFeedback";
 import AdminSupplies from "./pages/Admin/AdminSupplies";
 import AdminInvoice from "./pages/Admin/AdminInvoice";
+import AdminReports from "./pages/Admin/AdminReports";
 import ChatWidget from "./components/ChatWidget";
 import MyAppointments from "./pages/MyAppointments";
 import PaymentPage from "./pages/PaymentPage";
@@ -239,6 +240,16 @@ function App() {
                 allowedRoles={["NhanVien", "BacSiThuY", "QuanTriVien"]}
               >
                 <AdminInvoice />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="bao-cao"
+            element={
+              <ProtectedRoute
+                allowedRoles={["NhanVien", "BacSiThuY", "QuanTriVien"]}
+              >
+                <AdminReports />
               </ProtectedRoute>
             }
           />
