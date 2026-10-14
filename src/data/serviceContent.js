@@ -294,7 +294,7 @@ const NOI_DUNG = {
       "Phòng ngừa các bệnh truyền nhiễm nguy hiểm.",
       "Bảo vệ cả thú cưng lẫn các thành viên trong gia đình.",
       "Có hồ sơ tiêm phòng rõ ràng, theo dõi dễ dàng.",
-      "Được nhắc đúng ngày tiêm nhắc lại.",
+      "Có hồ sơ ghi rõ ngày tiêm nhắc lại để dễ theo dõi.",
     ],
     luuY: [
       "Thú cưng nên khỏe mạnh khi đi tiêm, đang ốm hoặc sốt hãy báo bác sĩ.",

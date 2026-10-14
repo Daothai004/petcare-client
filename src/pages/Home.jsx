@@ -83,7 +83,7 @@ function Home() {
           </svg>
           <h3>Đặt lịch chủ động</h3>
           <p>
-            Xem ngay khung giờ còn trống của từng nhân sự, không cần gọi điện
+            Chọn nhân sự và giờ hẹn phù hợp ngay trên web, không cần gọi điện
             hỏi lại.
           </p>
         </div>
