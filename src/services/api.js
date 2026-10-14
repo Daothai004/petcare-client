@@ -71,7 +71,7 @@ export const getStaffAccounts = () => api.get("/staff/accounts");
 
 // Số liệu thống kê tổng quan cho trang Admin (lịch hẹn hôm nay, doanh thu, khách hàng...)
 export const getDashboard = () => api.get("/admin/dashboard");
-
+export const getTiemNhacLai = () => api.get("/admin/tiem-nhac-lai");
 // doanh thu theo dịch vụ
 export const getRevenueByService = () =>
   api.get("/admin/doanh-thu-theo-dich-vu");

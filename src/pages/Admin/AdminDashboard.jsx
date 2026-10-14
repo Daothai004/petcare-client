@@ -1,6 +1,10 @@
 // bảng điều khiển admin
 import { useEffect, useState } from "react";
-import { getDashboard, getRevenueByService } from "../../services/api";
+import {
+  getDashboard,
+  getRevenueByService,
+  getTiemNhacLai,
+} from "../../services/api";
 
 // Biểu đồ cột doanh thu theo dịch vụ - vẽ bằng SVG thuần, không cần cài thêm
 // thư viện chart nào (recharts, chart.js...), tránh phải npm install thêm.
@@ -43,13 +47,16 @@ function RevenueChart({ data }) {
 function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [revenue, setRevenue] = useState(null);
+  const [nhacTiem, setNhacTiem] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     getDashboard()
       .then((res) => setStats(res.data))
       .catch((err) => setError(err.response?.data?.message || err.message));
-
+    getTiemNhacLai()
+      .then((res) => setNhacTiem(res.data))
+      .catch(() => setNhacTiem([])); // lỗi thì để rỗng, không làm hỏng cả trang
     getRevenueByService()
       .then((res) => setRevenue(res.data))
       .catch(() => setRevenue([])); // biểu đồ không quan trọng bằng số liệu chính, lỗi thì để rỗng
@@ -84,7 +91,53 @@ function AdminDashboard() {
           </div>
         )}
       </div>
-
+      <div className="chart-card" style={{ marginBottom: 24 }}>
+        <h2>Thú cưng sắp đến hạn tiêm nhắc lại (±30 ngày)</h2>
+        {nhacTiem.length === 0 ? (
+          <p className="chart-empty">
+            Hiện chưa có thú cưng nào đến hạn tiêm nhắc lại.
+          </p>
+        ) : (
+          <div className="admin-table-wrapper">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Thú cưng</th>
+                  <th>Chủ nuôi</th>
+                  <th>SĐT</th>
+                  <th>Vắc-xin</th>
+                  <th>Ngày nhắc lại</th>
+                  <th>Tình trạng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nhacTiem.map((t) => (
+                  <tr key={t.id}>
+                    <td>
+                      {t.tenThuCung} ({t.loai})
+                    </td>
+                    <td>{t.tenChuNuoi}</td>
+                    <td>{t.soDienThoai}</td>
+                    <td>
+                      {t.loaiVaccine} (sau mũi {t.muiSo})
+                    </td>
+                    <td>
+                      {new Date(t.ngayTiemNhacLai).toLocaleDateString("vi-VN")}
+                    </td>
+                    <td
+                      style={{
+                        color: t.quaHan ? "var(--color-error)" : "inherit",
+                      }}
+                    >
+                      {t.quaHan ? "Đã quá hạn" : "Sắp đến hạn"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
       <div className="chart-card">
         <h2>Doanh thu theo dịch vụ (30 ngày gần nhất)</h2>
         <RevenueChart data={revenue} />
