@@ -1,5 +1,6 @@
 // trang quản lý thú cưng
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getMyPets, createPet, updatePet, deletePet } from "../services/api";
 
 const RONG = { tenThuCung: "", loai: "", giong: "", canNang: "" };
@@ -126,6 +127,13 @@ function MyPets() {
               <td>{p.giong}</td>
               <td>{p.canNang} kg</td>
               <td className="admin-table-actions">
+                <Link
+                  to={`/so-suc-khoe/${p.id}`}
+                  className="btn-small"
+                  style={{ textDecoration: "none" }}
+                >
+                  Sổ sức khỏe
+                </Link>
                 <button className="btn-small" onClick={() => handleEdit(p)}>
                   Sửa
                 </button>

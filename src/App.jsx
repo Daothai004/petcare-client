@@ -38,6 +38,7 @@ import Profile from "./pages/Profile";
 import ForgotPassword from "./pages/ForgotPassword";
 import Feedback from "./pages/Feedback";
 import ServiceDetail from "./pages/ServiceDetail";
+import SoSucKhoe from "./pages/SoSucKhoe";
 // App.jsx giờ không còn chứa giao diện thật nữa, mà chỉ đóng vai trò
 // "bảng định tuyến" - quyết định địa chỉ (URL) nào thì hiển thị trang (component) nào.
 // Giống như việc quản lý nhiều Form trong 1 project WinForms, nhưng thay vì
@@ -59,6 +60,14 @@ function App() {
                 <Route path="/dang-ky" element={<Register />} />
                 <Route path="/quen-mat-khau" element={<ForgotPassword />} />
                 <Route path="/dat-lich" element={<BookAppointment />} />
+                <Route
+                  path="/so-suc-khoe/:id"
+                  element={
+                    <ProtectedRoute allowedRoles={["KhachHang"]}>
+                      <SoSucKhoe />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="/dich-vu/:id" element={<ServiceDetail />} />
                 <Route
                   path="/thu-cung-cua-toi"
