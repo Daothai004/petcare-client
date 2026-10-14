@@ -7,7 +7,13 @@ import {
   createMedicalRecord,
 } from "../../services/api";
 
-const RONG = { chanDoan: "", thuocKeDon: "", ghiChu: "" };
+const RONG = {
+  chanDoan: "",
+  thuocKeDon: "",
+  ghiChu: "",
+  vatTuId: "",
+  soLuongDung: 1,
+};
 
 function AdminMedicalRecords() {
   const [pets, setPets] = useState([]);
@@ -40,7 +46,16 @@ function AdminMedicalRecords() {
     e.preventDefault();
     setError(null);
     try {
-      await createMedicalRecord({ ...form, thuCungId: Number(thuCungId) });
+      await createMedicalRecord({
+        ...form,
+        thuCungId: Number(thuCungId),
+        vatTuId: form.vatTuId ? Number(form.vatTuId) : null,
+        soLuongDung: Number(form.soLuongDung) || 1,
+      });
+      // tải lại danh sách thuốc để thấy số tồn mới sau khi trừ kho
+      getSupplies("Thuoc")
+        .then((res) => setThuocs(res.data))
+        .catch(() => {});
       setForm(RONG);
       const res = await getMedicalRecords(thuCungId);
       setRecords(res.data);
@@ -98,6 +113,37 @@ function AdminMedicalRecords() {
                 <option key={v.id} value={v.tenVatTu} />
               ))}
             </datalist>
+            <select
+              name="vatTuId"
+              value={form.vatTuId}
+              onChange={(e) => {
+                const v = thuocs.find((x) => String(x.id) === e.target.value);
+                setForm({
+                  ...form,
+                  vatTuId: e.target.value,
+                  thuocKeDon: form.thuocKeDon || (v ? v.tenVatTu : ""),
+                });
+              }}
+            >
+              <option value="">Không trừ kho</option>
+              {thuocs.map((v) => (
+                <option key={v.id} value={v.id}>
+                  Trừ kho: {v.tenVatTu} (còn {v.soLuongTon} {v.donVi})
+                </option>
+              ))}
+            </select>
+            {form.vatTuId && (
+              <input
+                name="soLuongDung"
+                type="number"
+                min="1"
+                title="Số lượng dùng"
+                placeholder="SL"
+                value={form.soLuongDung}
+                onChange={handleChange}
+                style={{ width: 80 }}
+              />
+            )}
             <input
               name="ghiChu"
               placeholder="Ghi chú"

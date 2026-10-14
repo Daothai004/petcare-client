@@ -15,6 +15,8 @@ const RONG = {
   ngayTiem: "",
   ngayTiemNhacLai: "",
   ghiChu: "",
+  vatTuId: "",
+  soLuongDung: 1,
 };
 
 function AdminVaccinations() {
@@ -64,6 +66,8 @@ function AdminVaccinations() {
       thuCungId: Number(thuCungId),
       muiSo: Number(form.muiSo) || 1,
       ngayTiemNhacLai: form.ngayTiemNhacLai || null,
+      vatTuId: form.vatTuId ? Number(form.vatTuId) : null,
+      soLuongDung: Number(form.soLuongDung) || 1,
     };
 
     try {
@@ -71,6 +75,9 @@ function AdminVaccinations() {
         await updateVaccination(editingId, { ...data, id: editingId });
       } else {
         await createVaccination(data);
+        getSupplies("VacXin")
+          .then((res) => setVacXins(res.data))
+          .catch(() => {});
       }
       resetForm();
       loadRecords(thuCungId);
@@ -143,6 +150,41 @@ function AdminVaccinations() {
                 <option key={v.id} value={v.tenVatTu} />
               ))}
             </datalist>
+            {!editingId && (
+              <select
+                name="vatTuId"
+                value={form.vatTuId}
+                onChange={(e) => {
+                  const v = vacXins.find(
+                    (x) => String(x.id) === e.target.value,
+                  );
+                  setForm({
+                    ...form,
+                    vatTuId: e.target.value,
+                    loaiVaccine: form.loaiVaccine || (v ? v.tenVatTu : ""),
+                  });
+                }}
+              >
+                <option value="">Không trừ kho</option>
+                {vacXins.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    Trừ kho: {v.tenVatTu} (còn {v.soLuongTon} {v.donVi})
+                  </option>
+                ))}
+              </select>
+            )}
+            {!editingId && form.vatTuId && (
+              <input
+                name="soLuongDung"
+                type="number"
+                min="1"
+                title="Số liều dùng"
+                placeholder="SL"
+                value={form.soLuongDung}
+                onChange={handleChange}
+                style={{ width: 80 }}
+              />
+            )}
             <input
               name="muiSo"
               type="number"
