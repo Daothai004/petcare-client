@@ -17,6 +17,25 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+// Interceptor phản hồi: nếu server trả 401 (token hết hạn / không hợp lệ)
+// thì xóa phiên đăng nhập cũ và đưa người dùng về trang đăng nhập.
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const url = error.config?.url || "";
+    const dangDangNhap = url.includes("/auth/"); // đăng nhập sai mật khẩu cũng là 401, không được chuyển trang
+    const coToken = !!localStorage.getItem("token");
+
+    if (status === 401 && coToken && !dangDangNhap) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("vaiTro");
+      localStorage.removeItem("hoTen");
+      window.location.href = "/dang-nhap";
+    }
+    return Promise.reject(error);
+  },
+);
 
 // Các hàm gọi API cho từng nhóm chức năng — Component chỉ cần gọi các hàm này,
 // không cần biết chi tiết địa chỉ endpoint hay cú pháp axios.
