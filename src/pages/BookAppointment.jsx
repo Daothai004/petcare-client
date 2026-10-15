@@ -1,4 +1,4 @@
-// trang đặt lịch: chọn NHIỀU dịch vụ, mỗi dịch vụ một nhân sự
+// trang đặt lịch: chọn NHIỀU dịch vụ; nhân sự để hệ thống tự sắp xếp (mặc định) hoặc tự chọn
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -7,6 +7,9 @@ import {
   getStaff,
   datNhieuDichVu,
 } from "../services/api";
+
+// Chức vụ có chữ "bác sĩ" -> bác sĩ thú y (khớp với quy tắc ở backend)
+const laBacSi = (n) => (n.chucVu || "").toLowerCase().includes("bác sĩ");
 
 function BookAppointment() {
   const navigate = useNavigate();
@@ -18,7 +21,7 @@ function BookAppointment() {
 
   const [thuCungId, setThuCungId] = useState("");
   const [thoiGianBatDau, setThoiGianBatDau] = useState("");
-  const [chon, setChon] = useState([]); // [{ dichVuId, nhanSuId }]
+  const [chon, setChon] = useState([]); // [{ dichVuId, nhanSuId }], nhanSuId "" = tự động sắp xếp
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -75,10 +78,6 @@ function BookAppointment() {
       setError("Vui lòng chọn ít nhất 1 dịch vụ.");
       return;
     }
-    if (chon.some((c) => !c.nhanSuId)) {
-      setError("Vui lòng chọn nhân sự cho từng dịch vụ.");
-      return;
-    }
 
     try {
       await datNhieuDichVu({
@@ -87,7 +86,7 @@ function BookAppointment() {
         ghiChu: "",
         dichVus: chon.map((c) => ({
           dichVuId: c.dichVuId,
-          nhanSuId: Number(c.nhanSuId),
+          nhanSuId: Number(c.nhanSuId) || 0, // 0 = hệ thống tự sắp xếp
         })),
       });
       setSuccess(true);
@@ -195,15 +194,21 @@ function BookAppointment() {
                       <select
                         value={daChon.nhanSuId}
                         onChange={(e) => doiNhanSu(s.id, e.target.value)}
-                        required
                       >
-                        <option value="">-- Chọn nhân sự thực hiện --</option>
-                        {staff.map((n) => (
-                          <option key={n.id} value={n.id}>
-                            {n.hoTen} ({n.chucVu})
-                          </option>
-                        ))}
+                        <option value="">Tự động sắp xếp (khuyến nghị)</option>
+                        {staff
+                          .filter((n) => laBacSi(n) === !!s.canBacSi)
+                          .map((n) => (
+                            <option key={n.id} value={n.id}>
+                              Chọn {n.hoTen} ({n.chucVu})
+                            </option>
+                          ))}
                       </select>
+                      <small style={{ color: "var(--color-ink-soft)" }}>
+                        {s.canBacSi
+                          ? "Dịch vụ y tế do bác sĩ thú y thực hiện."
+                          : "Dịch vụ chăm sóc do nhân viên spa thực hiện."}
+                      </small>
                     </div>
                   )}
                 </div>
@@ -224,7 +229,7 @@ function BookAppointment() {
                         })
                       : "--:--"}{" "}
                     · {l.ten}
-                    {l.nhanSu ? ` (${l.nhanSu})` : ""}
+                    {l.nhanSu ? ` (${l.nhanSu})` : " (tự động sắp xếp)"}
                   </li>
                 ))}
               </ol>

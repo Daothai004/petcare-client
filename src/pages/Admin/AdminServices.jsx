@@ -13,6 +13,7 @@ const RONG = {
   gia: "",
   thoiLuongPhut: "",
   dangHoatDong: true,
+  canBacSi: false,
 };
 
 function AdminServices() {
@@ -44,6 +45,7 @@ function AdminServices() {
         ...form,
         gia: Number(form.gia),
         thoiLuongPhut: Number(form.thoiLuongPhut),
+        canBacSi: !!form.canBacSi,
       };
 
       if (editingId) {
@@ -129,6 +131,15 @@ function AdminServices() {
           onChange={handleChange}
           required
         />
+        <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <input
+            type="checkbox"
+            name="canBacSi"
+            checked={!!form.canBacSi}
+            onChange={handleChange}
+          />
+          Cần bác sĩ thú y
+        </label>
         <button type="submit" className="btn-small">
           {editingId ? "Lưu thay đổi" : "Thêm mới"}
         </button>
@@ -152,6 +163,7 @@ function AdminServices() {
               <th>Tên dịch vụ</th>
               <th>Giá</th>
               <th>Thời lượng</th>
+              <th>Người thực hiện</th>
               <th>Trạng thái</th>
               <th>Hành động</th>
             </tr>
@@ -162,6 +174,7 @@ function AdminServices() {
                 <td>{s.tenDichVu}</td>
                 <td>{Number(s.gia).toLocaleString("vi-VN")} đ</td>
                 <td>{s.thoiLuongPhut} phút</td>
+                <td>{s.canBacSi ? "Bác sĩ thú y" : "Nhân viên chăm sóc"}</td>
                 <td>
                   {s.dangHoatDong ? (
                     "Đang cung cấp"
