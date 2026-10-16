@@ -2105,3 +2105,41 @@ body {
   font-size: 0.9rem;
   line-height: 1.5;
 }
+/* ===== Menu quản trị chia nhóm ===== */
+.admin-nav a {
+  padding: 9px 24px;
+}
+
+.admin-nav-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+}
+
+.admin-nav-title {
+  padding: 14px 24px 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.admin-nav a.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-weight: 600;
+  border-left: 3px solid var(--color-accent);
+  padding-left: 21px;
+}
+
+/* Trên máy tính: menu dính cố định bên trái, tự cuộn khi dài */
+@media (min-width: 901px) {
+  .admin-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+}

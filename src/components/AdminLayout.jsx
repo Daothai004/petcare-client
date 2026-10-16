@@ -1,6 +1,6 @@
 // bố cục trang admin
 import { useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 function AdminLayout() {
   const navigate = useNavigate();
@@ -21,6 +21,85 @@ function AdminLayout() {
     if (isBacSi) return "Bác sĩ thú y";
     return "Nhân viên";
   };
+
+  // Menu chia nhóm. Mỗi mục có điều kiện "hien" theo vai trò;
+  // nhóm nào không có mục nào hiện thì ẩn luôn cả tiêu đề nhóm.
+  const nhomMenu = [
+    {
+      ten: null,
+      muc: [{ to: "/admin", nhan: "Tổng quan", hien: true, end: true }],
+    },
+    {
+      ten: "Lịch hẹn & lịch làm việc",
+      muc: [
+        { to: "/admin/lich-hen", nhan: "Lịch hẹn", hien: true },
+        {
+          to: "/admin/lich-lam-viec-cua-toi",
+          nhan: "Lịch làm việc của tôi",
+          hien: isBacSi || isNhanVien,
+        },
+        {
+          to: "/admin/lich-lam-viec",
+          nhan: "Lịch làm việc nhân sự",
+          hien: isAdmin,
+        },
+      ],
+    },
+    {
+      ten: "Khám chữa bệnh",
+      muc: [
+        { to: "/admin/benh-an", nhan: "Bệnh án", hien: isBacSi || isAdmin },
+        {
+          to: "/admin/tiem-phong",
+          nhan: "Tiêm phòng",
+          hien: isBacSi || isAdmin,
+        },
+        {
+          to: "/admin/phau-thuat",
+          nhan: "Phẫu thuật",
+          hien: isBacSi || isAdmin,
+        },
+        {
+          to: "/admin/kho-vat-tu",
+          nhan: "Kho thuốc & vật tư",
+          hien: isBacSi || isAdmin,
+        },
+      ],
+    },
+    {
+      ten: "Bán hàng",
+      muc: [
+        {
+          to: "/admin/san-pham",
+          nhan: "Sản phẩm",
+          hien: isNhanVien || isAdmin,
+        },
+        {
+          to: "/admin/don-hang",
+          nhan: "Đơn hàng",
+          hien: isNhanVien || isAdmin,
+        },
+      ],
+    },
+    {
+      ten: "Quản lý",
+      muc: [
+        { to: "/admin/dich-vu", nhan: "Dịch vụ", hien: isAdmin },
+        { to: "/admin/nhan-su", nhan: "Nhân sự", hien: isAdmin },
+        { to: "/admin/tai-khoan", nhan: "Tài khoản nhân viên", hien: isAdmin },
+        { to: "/admin/khach-hang", nhan: "Khách hàng", hien: isAdmin },
+        { to: "/admin/thu-cung", nhan: "Thú cưng", hien: isAdmin },
+      ],
+    },
+    {
+      ten: "Báo cáo & hệ thống",
+      muc: [
+        { to: "/admin/bao-cao", nhan: "Báo cáo & Excel", hien: true },
+        { to: "/admin/phan-hoi", nhan: "Phản hồi", hien: isAdmin },
+        { to: "/admin/chatbot-logs", nhan: "Lịch sử Chatbot", hien: isAdmin },
+      ],
+    },
+  ];
 
   return (
     <div className="admin-layout">
@@ -55,38 +134,25 @@ function AdminLayout() {
         <div className="admin-sidebar-brand">PetCare Admin</div>
 
         <nav className="admin-nav" onClick={() => setSidebarOpen(false)}>
-          <Link to="/admin">Tổng quan</Link>
-          <Link to="/admin/lich-hen">Lịch hẹn</Link>
-          {(isBacSi || isAdmin) && <Link to="/admin/benh-an">Bệnh án</Link>}
-          {(isBacSi || isNhanVien) && (
-            <Link to="/admin/lich-lam-viec-cua-toi">Lịch làm việc của tôi</Link>
-          )}
-          {isAdmin && (
-            <Link to="/admin/lich-lam-viec">Lịch làm việc nhân sự</Link>
-          )}
-          {(isBacSi || isAdmin) && (
-            <Link to="/admin/tiem-phong">Tiêm phòng</Link>
-          )}
-          {(isBacSi || isAdmin) && (
-            <Link to="/admin/phau-thuat">Phẫu thuật</Link>
-          )}
-          {(isBacSi || isAdmin) && (
-            <Link to="/admin/kho-vat-tu">Kho thuốc &amp; vật tư</Link>
-          )}
-          <Link to="/admin/bao-cao">Báo cáo &amp; Excel</Link>
-          {(isNhanVien || isAdmin) && (
-            <Link to="/admin/san-pham">Sản phẩm</Link>
-          )}
-          {(isNhanVien || isAdmin) && (
-            <Link to="/admin/don-hang">Đơn hàng</Link>
-          )}
-          {isAdmin && <Link to="/admin/dich-vu">Dịch vụ</Link>}
-          {isAdmin && <Link to="/admin/nhan-su">Nhân sự</Link>}
-          {isAdmin && <Link to="/admin/khach-hang">Khách hàng</Link>}
-          {isAdmin && <Link to="/admin/thu-cung">Thú cưng</Link>}
-          {isAdmin && <Link to="/admin/tai-khoan">Tài khoản nhân viên</Link>}
-          {isAdmin && <Link to="/admin/chatbot-logs">Lịch sử Chatbot</Link>}
-          {isAdmin && <Link to="/admin/phan-hoi">Phản hồi</Link>}
+          {nhomMenu.map((nhom) => {
+            const mucHien = nhom.muc.filter((m) => m.hien);
+            if (mucHien.length === 0) return null;
+            return (
+              <div key={nhom.ten || "dau"} className="admin-nav-group">
+                {nhom.ten && <div className="admin-nav-title">{nhom.ten}</div>}
+                {mucHien.map((m) => (
+                  <NavLink
+                    key={m.to}
+                    to={m.to}
+                    end={m.end}
+                    className={({ isActive }) => (isActive ? "active" : "")}
+                  >
+                    {m.nhan}
+                  </NavLink>
+                ))}
+              </div>
+            );
+          })}
         </nav>
 
         <div className="admin-user">
