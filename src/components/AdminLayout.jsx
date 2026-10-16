@@ -30,7 +30,7 @@ function AdminLayout() {
       muc: [{ to: "/admin", nhan: "Tổng quan", hien: true, end: true }],
     },
     {
-      ten: "Lịch hẹn & lịch làm việc",
+      ten: "Lịch hẹn & ca làm",
       muc: [
         { to: "/admin/lich-hen", nhan: "Lịch hẹn", hien: true },
         {

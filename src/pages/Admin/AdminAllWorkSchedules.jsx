@@ -59,6 +59,19 @@ function AdminAllWorkSchedules() {
     loadData();
   }, []);
 
+  // Thông báo tự tắt sau vài giây
+  useEffect(() => {
+    if (!thongBao) return;
+    const t = setTimeout(() => setThongBao(null), 3500);
+    return () => clearTimeout(t);
+  }, [thongBao]);
+
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(null), 7000);
+    return () => clearTimeout(t);
+  }, [error]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -82,6 +95,7 @@ function AdminAllWorkSchedules() {
         ghiChu: form.ghiChu,
       });
       setForm(RONG);
+      setThongBao("Đã thêm ca làm việc.");
       loadData();
     } catch (err) {
       setError(err.response?.data?.message || "Lưu lịch làm việc thất bại.");
@@ -92,9 +106,10 @@ function AdminAllWorkSchedules() {
     if (!confirm("Xóa ca làm việc này?")) return;
     try {
       await deleteWorkSchedule(id);
+      setThongBao("Đã xóa ca làm việc.");
       loadData();
     } catch (err) {
-      alert(err.response?.data?.message || "Xóa thất bại.");
+      setError(err.response?.data?.message || "Xóa thất bại.");
     }
   };
 
@@ -103,7 +118,7 @@ function AdminAllWorkSchedules() {
     setForm({ ...form, nhanSuId: String(n.id), thuTrongTuan: thu });
     setError(null);
     setThongBao(
-      `Đã chọn ${n.hoTen} · ${TEN_THU[thu]}. Nhập giờ ở form phía trên rồi bấm "Thêm ca làm".`,
+      `Đã chọn ${n.hoTen} · ${TEN_THU[thu]}, nhập giờ rồi bấm "Thêm ca làm".`,
     );
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -199,14 +214,20 @@ function AdminAllWorkSchedules() {
   return (
     <div>
       <h1>Lịch làm việc nhân sự</h1>
-      <p style={{ color: "var(--color-ink-soft)", marginTop: 0 }}>
-        Mỗi ô là ca làm cố định lặp lại hằng tuần. Nhân sự đã có ca thì chỉ nhận
-        khách trong các ca đó (ô trống = nghỉ). Nhân sự chưa có ca nào thì không
-        bị giới hạn giờ.
-      </p>
 
-      {error && <div className="alert alert-error">{error}</div>}
-      {thongBao && <div className="alert alert-success">{thongBao}</div>}
+      {/* Thông báo nổi ở góc phải trên, luôn nhìn thấy dù đang cuộn ở đâu, tự tắt sau vài giây */}
+      <div
+        style={{
+          position: "fixed",
+          top: 16,
+          right: 16,
+          zIndex: 2000,
+          maxWidth: 360,
+        }}
+      >
+        {error && <div className="alert alert-error">{error}</div>}
+        {thongBao && <div className="alert alert-success">{thongBao}</div>}
+      </div>
 
       <form onSubmit={handleSubmit} className="admin-inline-form">
         <select
@@ -260,10 +281,6 @@ function AdminAllWorkSchedules() {
 
       <div className="chart-card" style={{ marginBottom: 24 }}>
         <h2>Xếp nhanh ca làm việc</h2>
-        <p style={{ color: "var(--color-ink-soft)", margin: "0 0 12px" }}>
-          Tạo cùng một ca cho nhiều nhân sự và nhiều ngày một lúc. Ô nào đã có
-          ca sẽ được giữ nguyên.
-        </p>
         <div className="admin-inline-form">
           <select
             value={nhanh.doiTuong}
@@ -351,7 +368,7 @@ function AdminAllWorkSchedules() {
                       <td
                         key={thu}
                         style={{
-                          minWidth: 120,
+                          minWidth: 130,
                           cursor: cas.length === 0 ? "pointer" : "default",
                         }}
                         title={
@@ -385,7 +402,7 @@ function AdminAllWorkSchedules() {
                                   : "#e3efe6",
                               }}
                             >
-                              <span>
+                              <span style={{ whiteSpace: "nowrap" }}>
                                 {gio(c.gioBatDau)}–{gio(c.gioKetThuc)}
                               </span>
                               <button
@@ -420,10 +437,6 @@ function AdminAllWorkSchedules() {
           </tbody>
         </table>
       </div>
-      <p style={{ color: "var(--color-ink-soft)", fontSize: "0.85rem" }}>
-        Màu cam: bác sĩ thú y · Màu xanh: nhân viên chăm sóc. Bấm vào ô trống để
-        thêm ca, bấm × để xóa ca.
-      </p>
     </div>
   );
 }

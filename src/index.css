@@ -2143,3 +2143,8 @@ body {
     flex-shrink: 0;
   }
 }
+@media (min-width: 901px) {
+  .admin-sidebar {
+    width: 264px;
+  }
+}
