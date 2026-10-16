@@ -1,4 +1,4 @@
-// trang quản lý lịch làm việc toàn bộ nhân sự (chỉ Admin)
+// trang quản lý lịch làm việc toàn bộ nhân sự (chỉ Admin): lưới tuần + xếp nhanh
 import { useEffect, useState } from "react";
 import {
   getAllWorkSchedules,
@@ -17,6 +17,13 @@ const TEN_THU = {
   6: "Thứ 7",
 };
 
+// Thứ tự hiển thị trên lưới: Thứ 2 -> Chủ nhật
+const THU_THEO_THU_TU = [1, 2, 3, 4, 5, 6, 0];
+
+// Chức vụ có chữ "bác sĩ" -> bác sĩ thú y (khớp với quy tắc ở backend)
+const laBacSi = (n) => (n.chucVu || "").toLowerCase().includes("bác sĩ");
+const gio = (v) => (v ? v.slice(0, 5) : "");
+
 const RONG = {
   nhanSuId: "",
   thuTrongTuan: 1,
@@ -29,11 +36,23 @@ function AdminAllWorkSchedules() {
   const [list, setList] = useState([]);
   const [staffList, setStaffList] = useState([]);
   const [form, setForm] = useState(RONG);
+  const [nhanh, setNhanh] = useState({
+    doiTuong: "all",
+    gioBatDau: "08:00",
+    gioKetThuc: "20:00",
+    ngay: [1, 2, 3, 4, 5, 6, 0],
+  });
+  const [dangXep, setDangXep] = useState(false);
   const [error, setError] = useState(null);
+  const [thongBao, setThongBao] = useState(null);
 
   const loadData = () => {
-    getAllWorkSchedules().then((res) => setList(res.data));
-    getStaff().then((res) => setStaffList(res.data));
+    getAllWorkSchedules()
+      .then((res) => setList(res.data))
+      .catch((err) => setError(err.response?.data?.message || err.message));
+    getStaff()
+      .then((res) => setStaffList(res.data))
+      .catch((err) => setError(err.response?.data?.message || err.message));
   };
 
   useEffect(() => {
@@ -47,6 +66,7 @@ function AdminAllWorkSchedules() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setThongBao(null);
 
     if (!form.nhanSuId) {
       setError("Vui lòng chọn nhân sự.");
@@ -78,10 +98,115 @@ function AdminAllWorkSchedules() {
     }
   };
 
+  // Bấm vào ô trống trên lưới -> chọn sẵn nhân sự và thứ trong form thêm ca
+  const chonO = (n, thu) => {
+    setForm({ ...form, nhanSuId: String(n.id), thuTrongTuan: thu });
+    setError(null);
+    setThongBao(
+      `Đã chọn ${n.hoTen} · ${TEN_THU[thu]}. Nhập giờ ở form phía trên rồi bấm "Thêm ca làm".`,
+    );
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const toggleNgay = (thu) => {
+    setNhanh({
+      ...nhanh,
+      ngay: nhanh.ngay.includes(thu)
+        ? nhanh.ngay.filter((t) => t !== thu)
+        : [...nhanh.ngay, thu],
+    });
+  };
+
+  // Xếp nhanh: tạo cùng một ca cho nhiều nhân sự / nhiều ngày.
+  // Ô (nhân sự + thứ) nào đã có ca thì giữ nguyên, không tạo thêm.
+  const handleXepNhanh = async () => {
+    setError(null);
+    setThongBao(null);
+
+    if (nhanh.gioKetThuc <= nhanh.gioBatDau) {
+      setError("Giờ kết thúc phải sau giờ bắt đầu.");
+      return;
+    }
+    if (nhanh.ngay.length === 0) {
+      setError("Hãy chọn ít nhất một ngày trong tuần.");
+      return;
+    }
+
+    const doiTuong =
+      nhanh.doiTuong === "all"
+        ? staffList
+        : staffList.filter((n) => String(n.id) === nhanh.doiTuong);
+
+    const canTao = [];
+    let boQua = 0;
+    doiTuong.forEach((n) => {
+      nhanh.ngay.forEach((thu) => {
+        const daCo = list.some(
+          (l) => l.nhanSuId === n.id && l.thuTrongTuan === thu,
+        );
+        if (daCo) boQua++;
+        else canTao.push({ nhanSuId: n.id, thu });
+      });
+    });
+
+    if (canTao.length === 0) {
+      setThongBao(`Không có ô nào cần tạo (${boQua} ô đã có ca).`);
+      return;
+    }
+    if (
+      !confirm(
+        `Tạo ${canTao.length} ca làm ${nhanh.gioBatDau}-${nhanh.gioKetThuc}? (${boQua} ô đã có ca sẽ được giữ nguyên)`,
+      )
+    ) {
+      return;
+    }
+
+    setDangXep(true);
+    try {
+      for (const o of canTao) {
+        await createWorkSchedule({
+          nhanSuId: o.nhanSuId,
+          thuTrongTuan: o.thu,
+          gioBatDau: `${nhanh.gioBatDau}:00`,
+          gioKetThuc: `${nhanh.gioKetThuc}:00`,
+          ghiChu: "",
+        });
+      }
+      setThongBao(`Đã tạo ${canTao.length} ca làm việc.`);
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Xếp nhanh bị dừng giữa chừng, hãy kiểm tra lại lưới bên dưới.",
+      );
+    } finally {
+      setDangXep(false);
+      loadData();
+    }
+  };
+
+  // Bác sĩ xếp trước, sau đó theo tên
+  const sapXep = [...staffList].sort(
+    (a, b) =>
+      Number(laBacSi(b)) - Number(laBacSi(a)) ||
+      a.hoTen.localeCompare(b.hoTen, "vi"),
+  );
+
+  const caCua = (nhanSuId, thu) =>
+    list
+      .filter((l) => l.nhanSuId === nhanSuId && l.thuTrongTuan === thu)
+      .sort((a, b) => (a.gioBatDau || "").localeCompare(b.gioBatDau || ""));
+
   return (
     <div>
       <h1>Lịch làm việc nhân sự</h1>
+      <p style={{ color: "var(--color-ink-soft)", marginTop: 0 }}>
+        Mỗi ô là ca làm cố định lặp lại hằng tuần. Nhân sự đã có ca thì chỉ nhận
+        khách trong các ca đó (ô trống = nghỉ). Nhân sự chưa có ca nào thì không
+        bị giới hạn giờ.
+      </p>
+
       {error && <div className="alert alert-error">{error}</div>}
+      {thongBao && <div className="alert alert-success">{thongBao}</div>}
 
       <form onSubmit={handleSubmit} className="admin-inline-form">
         <select
@@ -91,7 +216,7 @@ function AdminAllWorkSchedules() {
           required
         >
           <option value="">-- Chọn nhân sự --</option>
-          {staffList.map((n) => (
+          {sapXep.map((n) => (
             <option key={n.id} value={n.id}>
               {n.hoTen} ({n.chucVu})
             </option>
@@ -102,9 +227,9 @@ function AdminAllWorkSchedules() {
           value={form.thuTrongTuan}
           onChange={handleChange}
         >
-          {Object.entries(TEN_THU).map(([so, ten]) => (
+          {THU_THEO_THU_TU.map((so) => (
             <option key={so} value={so}>
-              {ten}
+              {TEN_THU[so]}
             </option>
           ))}
         </select>
@@ -133,42 +258,172 @@ function AdminAllWorkSchedules() {
         </button>
       </form>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Nhân sự</th>
-            <th>Thứ</th>
-            <th>Giờ bắt đầu</th>
-            <th>Giờ kết thúc</th>
-            <th>Ghi chú</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {list.map((l) => (
-            <tr key={l.id}>
-              <td>{l.nhanSu?.hoTen}</td>
-              <td>{TEN_THU[l.thuTrongTuan]}</td>
-              <td>{l.gioBatDau?.slice(0, 5)}</td>
-              <td>{l.gioKetThuc?.slice(0, 5)}</td>
-              <td>{l.ghiChu}</td>
-              <td className="admin-table-actions">
-                <button
-                  className="btn-small btn-danger"
-                  onClick={() => handleDelete(l.id)}
-                >
-                  Xóa
-                </button>
-              </td>
-            </tr>
+      <div className="chart-card" style={{ marginBottom: 24 }}>
+        <h2>Xếp nhanh ca làm việc</h2>
+        <p style={{ color: "var(--color-ink-soft)", margin: "0 0 12px" }}>
+          Tạo cùng một ca cho nhiều nhân sự và nhiều ngày một lúc. Ô nào đã có
+          ca sẽ được giữ nguyên.
+        </p>
+        <div className="admin-inline-form">
+          <select
+            value={nhanh.doiTuong}
+            onChange={(e) => setNhanh({ ...nhanh, doiTuong: e.target.value })}
+          >
+            <option value="all">Tất cả nhân sự</option>
+            {sapXep.map((n) => (
+              <option key={n.id} value={String(n.id)}>
+                {n.hoTen}
+              </option>
+            ))}
+          </select>
+          <input
+            type="time"
+            value={nhanh.gioBatDau}
+            onChange={(e) => setNhanh({ ...nhanh, gioBatDau: e.target.value })}
+          />
+          <input
+            type="time"
+            value={nhanh.gioKetThuc}
+            onChange={(e) => setNhanh({ ...nhanh, gioKetThuc: e.target.value })}
+          />
+          <button
+            type="button"
+            className="btn-small"
+            disabled={dangXep}
+            onClick={handleXepNhanh}
+          >
+            {dangXep ? "Đang tạo..." : "Áp dụng"}
+          </button>
+        </div>
+        <div
+          style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 10 }}
+        >
+          {THU_THEO_THU_TU.map((t) => (
+            <label
+              key={t}
+              style={{ display: "flex", alignItems: "center", gap: 4 }}
+            >
+              <input
+                type="checkbox"
+                checked={nhanh.ngay.includes(t)}
+                onChange={() => toggleNgay(t)}
+              />
+              {TEN_THU[t]}
+            </label>
           ))}
-          {list.length === 0 && (
+        </div>
+      </div>
+
+      <div className="admin-table-wrapper">
+        <table className="admin-table">
+          <thead>
             <tr>
-              <td colSpan="6">Chưa có lịch làm việc nào.</td>
+              <th>Nhân sự</th>
+              {THU_THEO_THU_TU.map((t) => (
+                <th key={t}>{TEN_THU[t]}</th>
+              ))}
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sapXep.map((n) => {
+              const tongCa = list.filter((l) => l.nhanSuId === n.id).length;
+              const bs = laBacSi(n);
+              return (
+                <tr key={n.id}>
+                  <td style={{ minWidth: 170 }}>
+                    <strong>{n.hoTen}</strong>
+                    <br />
+                    <small style={{ color: "var(--color-ink-soft)" }}>
+                      {n.chucVu}
+                    </small>
+                    {tongCa === 0 && (
+                      <>
+                        <br />
+                        <small style={{ color: "var(--color-error)" }}>
+                          Chưa có ca: không giới hạn giờ làm
+                        </small>
+                      </>
+                    )}
+                  </td>
+                  {THU_THEO_THU_TU.map((thu) => {
+                    const cas = caCua(n.id, thu);
+                    return (
+                      <td
+                        key={thu}
+                        style={{
+                          minWidth: 120,
+                          cursor: cas.length === 0 ? "pointer" : "default",
+                        }}
+                        title={
+                          cas.length === 0
+                            ? "Bấm để thêm ca cho ô này"
+                            : undefined
+                        }
+                        onClick={
+                          cas.length === 0 ? () => chonO(n, thu) : undefined
+                        }
+                      >
+                        {cas.length === 0 ? (
+                          <span style={{ color: "var(--color-ink-soft)" }}>
+                            {tongCa === 0 ? "—" : "Nghỉ"}
+                          </span>
+                        ) : (
+                          cas.map((c) => (
+                            <div
+                              key={c.id}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                gap: 6,
+                                padding: "3px 8px",
+                                borderRadius: 6,
+                                marginBottom: 4,
+                                fontSize: "0.85rem",
+                                background: bs
+                                  ? "var(--color-accent-soft)"
+                                  : "#e3efe6",
+                              }}
+                            >
+                              <span>
+                                {gio(c.gioBatDau)}–{gio(c.gioKetThuc)}
+                              </span>
+                              <button
+                                type="button"
+                                title="Xóa ca này"
+                                onClick={() => handleDelete(c.id)}
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  color: "var(--color-error)",
+                                  fontWeight: 700,
+                                  padding: 0,
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+            {sapXep.length === 0 && (
+              <tr>
+                <td colSpan="8">Chưa có nhân sự nào.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <p style={{ color: "var(--color-ink-soft)", fontSize: "0.85rem" }}>
+        Màu cam: bác sĩ thú y · Màu xanh: nhân viên chăm sóc. Bấm vào ô trống để
+        thêm ca, bấm × để xóa ca.
+      </p>
     </div>
   );
 }
