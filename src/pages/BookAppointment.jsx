@@ -172,7 +172,7 @@ function BookAppointment() {
           </div>
 
           <div className="form-field">
-            <label>Chọn dịch vụ (có thể chọn nhiều)</label>
+            <label>Chọn dịch vụ </label>
             {services.map((s) => {
               const daChon = chon.find((c) => c.dichVuId === s.id);
               return (
