@@ -97,7 +97,8 @@ export const createPet = (data) => api.post(`/pets`, data);
 export const updatePet = (id, data) => api.put(`/pets/${id}`, data);
 export const deletePet = (id) => api.delete(`/pets/${id}`);
 // chatbot
-export const askChatbot = (cauHoi) => api.post("/chatbot/ask", { cauHoi });
+export const askChatbot = (cauHoi, nguCanh) =>
+  api.post("/chatbot/ask", { cauHoi, nguCanh });
 export const getChatbotLogs = () => api.get("/chatbot/logs");
 
 export const getMyAppointments = () => api.get("/appointments/mine");

@@ -7,11 +7,13 @@ function ChatWidget() {
   const [messages, setMessages] = useState([
     {
       role: "bot",
-      text: "Xin chào! Tôi là trợ lý ảo PetCare. Bạn cần hỏi gì nào?",
+      text: "Xin chào! Tôi là trợ lý ảo PetCare. Tôi có thể tư vấn và đặt lịch giúp bạn, bạn cần gì nào?",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  // Thông tin đặt lịch đang dở do server trả về, gửi lại ở lượt sau để bot nhớ mạch trò chuyện
+  const [nguCanh, setNguCanh] = useState(null);
   const cuoiDanhSach = useRef(null);
 
   useEffect(() => {
@@ -28,11 +30,12 @@ function ChatWidget() {
     setLoading(true);
 
     try {
-      const res = await askChatbot(cauHoi);
+      const res = await askChatbot(cauHoi, nguCanh);
       setMessages((prev) => [
         ...prev,
         { role: "bot", text: res.data.cauTraLoi },
       ]);
+      setNguCanh(res.data.nguCanh ?? null);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -62,6 +65,7 @@ function ChatWidget() {
               <div
                 key={i}
                 className={`chat-bubble ${m.role === "user" ? "chat-bubble-user" : "chat-bubble-bot"}`}
+                style={{ whiteSpace: "pre-line" }}
               >
                 {m.text}
               </div>
