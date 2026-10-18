@@ -1,6 +1,7 @@
 // trang đặt lịch: chọn NHIỀU dịch vụ; nhân sự để hệ thống tự sắp xếp (mặc định) hoặc tự chọn
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import AuthSplit from "../components/AuthSplit";
 import {
   getServices,
   getMyPets,
@@ -101,154 +102,137 @@ function BookAppointment() {
   // ===== Trường hợp CHƯA đăng nhập =====
   if (!token) {
     return (
-      <div className="page page-split">
-        <h1>Đặt lịch hẹn</h1>
-        <div className="alert alert-error">
-          Bạn cần đăng nhập để đặt lịch hẹn.{" "}
-          <Link to="/dang-nhap" style={{ fontWeight: 600 }}>
-            Đăng nhập ngay
-          </Link>{" "}
-          hoặc{" "}
-          <Link to="/dang-ky" style={{ fontWeight: 600 }}>
-            tạo tài khoản mới
-          </Link>
-          .
-        </div>
-        <img
-          className="page-split-image"
-          src="/img/dat-lich.jpg"
-          alt="PetCare"
-          onError={(e) => (e.currentTarget.style.display = "none")}
-        />
-      </div>
+      <AuthSplit
+        anh="/img/dat-lich.jpg"
+        tieuDe="Đặt lịch hẹn"
+        moTa="Bạn cần đăng nhập để đặt lịch hẹn cho thú cưng."
+      >
+        <Link to="/dang-nhap" className="btn-primary auth-btn">
+          Đăng nhập ngay
+        </Link>
+        <p className="form-helper-link">
+          Chưa có tài khoản? <Link to="/dang-ky">Tạo tài khoản mới</Link>
+        </p>
+      </AuthSplit>
     );
   }
 
   return (
-    <div className="page page-split">
-      <h1>Đặt lịch hẹn</h1>
-      <div className="form-card" style={{ maxWidth: 560 }}>
-        {error && <div className="alert alert-error">{error}</div>}
-        {success && (
-          <div className="alert alert-success">
-            Đặt lịch thành công! Đang chuyển sang Lịch hẹn của tôi...
+    <AuthSplit anh="/img/dat-lich.jpg" tieuDe="Đặt lịch hẹn" rong>
+      {error && <div className="alert alert-error">{error}</div>}
+      {success && (
+        <div className="alert alert-success">
+          Đặt lịch thành công! Đang chuyển sang Lịch hẹn của tôi...
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-field">
+          <label htmlFor="thuCungId">Thú cưng</label>
+          <select
+            id="thuCungId"
+            value={thuCungId}
+            onChange={(e) => setThuCungId(e.target.value)}
+            required
+          >
+            <option value="">-- Chọn thú cưng --</option>
+            {pets.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.tenThuCung}
+              </option>
+            ))}
+          </select>
+          {pets.length === 0 && (
+            <small style={{ color: "var(--color-ink-soft)" }}>
+              Bạn chưa có thú cưng nào —{" "}
+              <Link to="/thu-cung-cua-toi">thêm thú cưng tại đây</Link> trước
+              khi đặt lịch.
+            </small>
+          )}
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="thoiGianBatDau">Thời gian bắt đầu</label>
+          <input
+            id="thoiGianBatDau"
+            type="datetime-local"
+            value={thoiGianBatDau}
+            onChange={(e) => setThoiGianBatDau(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="form-field">
+          <label>Chọn dịch vụ (có thể chọn nhiều)</label>
+          {services.map((s) => {
+            const daChon = chon.find((c) => c.dichVuId === s.id);
+            return (
+              <div key={s.id} className="book-service">
+                <label className="book-service-head">
+                  <input
+                    type="checkbox"
+                    checked={!!daChon}
+                    onChange={() => toggleDichVu(s.id)}
+                  />
+                  <span className="book-service-name">{s.tenDichVu}</span>
+                  <span className="book-service-meta">
+                    {s.thoiLuongPhut} phút ·{" "}
+                    {Number(s.gia).toLocaleString("vi-VN")} đ
+                  </span>
+                </label>
+                {daChon && (
+                  <div className="form-field">
+                    <select
+                      value={daChon.nhanSuId}
+                      onChange={(e) => doiNhanSu(s.id, e.target.value)}
+                    >
+                      <option value="">Tự động sắp xếp (khuyến nghị)</option>
+                      {staff
+                        .filter((n) => laBacSi(n) === !!s.canBacSi)
+                        .map((n) => (
+                          <option key={n.id} value={n.id}>
+                            Chọn {n.hoTen} ({n.chucVu})
+                          </option>
+                        ))}
+                    </select>
+                    <small style={{ color: "var(--color-ink-soft)" }}>
+                      {s.canBacSi
+                        ? "Dịch vụ y tế do bác sĩ thú y thực hiện."
+                        : "Dịch vụ chăm sóc do nhân viên spa thực hiện."}
+                    </small>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {lichDuKien.length > 0 && (
+          <div className="book-summary">
+            <strong>Lịch dự kiến (thực hiện lần lượt):</strong>
+            <ol style={{ margin: "8px 0", paddingLeft: 20 }}>
+              {lichDuKien.map((l, i) => (
+                <li key={i}>
+                  {l.gio
+                    ? l.gio.toLocaleTimeString("vi-VN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "--:--"}{" "}
+                  · {l.ten}
+                  {l.nhanSu ? ` (${l.nhanSu})` : " (tự động sắp xếp)"}
+                </li>
+              ))}
+            </ol>
+            <strong>Tạm tính: {tamTinh.toLocaleString("vi-VN")} đ</strong>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label htmlFor="thuCungId">Thú cưng</label>
-            <select
-              id="thuCungId"
-              value={thuCungId}
-              onChange={(e) => setThuCungId(e.target.value)}
-              required
-            >
-              <option value="">-- Chọn thú cưng --</option>
-              {pets.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.tenThuCung}
-                </option>
-              ))}
-            </select>
-            {pets.length === 0 && (
-              <small style={{ color: "var(--color-ink-soft)" }}>
-                Bạn chưa có thú cưng nào —{" "}
-                <Link to="/thu-cung-cua-toi">thêm thú cưng tại đây</Link> trước
-                khi đặt lịch.
-              </small>
-            )}
-          </div>
-
-          <div className="form-field">
-            <label htmlFor="thoiGianBatDau">Thời gian bắt đầu</label>
-            <input
-              id="thoiGianBatDau"
-              type="datetime-local"
-              value={thoiGianBatDau}
-              onChange={(e) => setThoiGianBatDau(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-field">
-            <label>Chọn dịch vụ </label>
-            {services.map((s) => {
-              const daChon = chon.find((c) => c.dichVuId === s.id);
-              return (
-                <div key={s.id} className="book-service">
-                  <label className="book-service-head">
-                    <input
-                      type="checkbox"
-                      checked={!!daChon}
-                      onChange={() => toggleDichVu(s.id)}
-                    />
-                    <span className="book-service-name">{s.tenDichVu}</span>
-                    <span className="book-service-meta">
-                      {s.thoiLuongPhut} phút ·{" "}
-                      {Number(s.gia).toLocaleString("vi-VN")} đ
-                    </span>
-                  </label>
-                  {daChon && (
-                    <div className="form-field">
-                      <select
-                        value={daChon.nhanSuId}
-                        onChange={(e) => doiNhanSu(s.id, e.target.value)}
-                      >
-                        <option value="">Tự động sắp xếp (khuyến nghị)</option>
-                        {staff
-                          .filter((n) => laBacSi(n) === !!s.canBacSi)
-                          .map((n) => (
-                            <option key={n.id} value={n.id}>
-                              Chọn {n.hoTen} ({n.chucVu})
-                            </option>
-                          ))}
-                      </select>
-                      <small style={{ color: "var(--color-ink-soft)" }}>
-                        {s.canBacSi
-                          ? "Dịch vụ y tế do bác sĩ thú y thực hiện."
-                          : "Dịch vụ chăm sóc do nhân viên spa thực hiện."}
-                      </small>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {lichDuKien.length > 0 && (
-            <div className="book-summary">
-              <strong>Lịch dự kiến (thực hiện lần lượt):</strong>
-              <ol style={{ margin: "8px 0", paddingLeft: 20 }}>
-                {lichDuKien.map((l, i) => (
-                  <li key={i}>
-                    {l.gio
-                      ? l.gio.toLocaleTimeString("vi-VN", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : "--:--"}{" "}
-                    · {l.ten}
-                    {l.nhanSu ? ` (${l.nhanSu})` : " (tự động sắp xếp)"}
-                  </li>
-                ))}
-              </ol>
-              <strong>Tạm tính: {tamTinh.toLocaleString("vi-VN")} đ</strong>
-            </div>
-          )}
-
-          <button type="submit" className="btn-primary">
-            Xác nhận đặt lịch
-          </button>
-        </form>
-      </div>
-      <img
-        className="page-split-image"
-        src="/img/dat-lich.jpg"
-        alt="PetCare"
-        onError={(e) => (e.currentTarget.style.display = "none")}
-      />
-    </div>
+        <button type="submit" className="btn-primary">
+          Xác nhận đặt lịch
+        </button>
+      </form>
+    </AuthSplit>
   );
 }
 

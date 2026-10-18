@@ -1,5 +1,7 @@
 // trang đăng nhập
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import AuthSplit from "../components/AuthSplit";
 import { loginUser } from "../services/api";
 
 function Login() {
@@ -34,52 +36,49 @@ function Login() {
   };
 
   return (
-    <div className="page page-split">
-      <h1>Đăng nhập</h1>
-      <div className="form-card">
-        {error && <div className="alert alert-error">{error}</div>}
+    <AuthSplit
+      anh="/img/dangnhap.jpg"
+      tieuDe="Đăng nhập"
+      moTa="Chào mừng bạn quay lại PetCare"
+      chanTrang={
+        <>
+          Chưa có tài khoản? <Link to="/dang-ky">Đăng ký ngay</Link>
+        </>
+      }
+    >
+      {error && <div className="alert alert-error">{error}</div>}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <label htmlFor="matKhau">Mật khẩu</label>
-            <input
-              id="matKhau"
-              name="matKhau"
-              type="password"
-              value={form.matKhau}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" className="btn-primary">
-            Đăng nhập
-          </button>
-        </form>
-        {/* Chưa làm chức năng gửi email đặt lại mật khẩu thật, nên tạm thời
-            chỉ hiện hướng dẫn liên hệ - vẫn cần có vì người dùng quên mật khẩu
-            là tình huống rất thường gặp, để trống hẳn sẽ gây khó chịu. */}
-        <p className="form-helper-link">
-          <a href="/quen-mat-khau">Quên mật khẩu?</a>
-        </p>
-      </div>
-      <img
-        className="page-split-image"
-        src="/img/dangnhap.jpg"
-        alt="PetCare"
-        onError={(e) => (e.currentTarget.style.display = "none")}
-      />
-    </div>
+      <form onSubmit={handleSubmit}>
+        <div className="form-field">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="matKhau">Mật khẩu</label>
+          <input
+            id="matKhau"
+            name="matKhau"
+            type="password"
+            value={form.matKhau}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" className="btn-primary">
+          Đăng nhập
+        </button>
+      </form>
+      <p className="form-helper-link">
+        <Link to="/quen-mat-khau">Quên mật khẩu?</Link>
+      </p>
+    </AuthSplit>
   );
 }
 

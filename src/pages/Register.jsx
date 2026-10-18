@@ -1,5 +1,7 @@
 // trang tạo tài khoản đăng ký
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import AuthSplit from "../components/AuthSplit";
 import { registerUser } from "../services/api";
 
 function Register() {
@@ -39,66 +41,66 @@ function Register() {
   };
 
   return (
-    <div className="page page-split">
-      <h1>Đăng ký tài khoản</h1>
-      <div className="form-card">
-        {error && <div className="alert alert-error">{error}</div>}
+    <AuthSplit
+      anh="/img/OIP.jpg"
+      tieuDe="Đăng ký tài khoản"
+      moTa="Tạo tài khoản để đặt lịch chăm sóc cho thú cưng"
+      chanTrang={
+        <>
+          Đã có tài khoản? <Link to="/dang-nhap">Đăng nhập</Link>
+        </>
+      }
+    >
+      {error && <div className="alert alert-error">{error}</div>}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label htmlFor="hoTen">Họ tên</label>
-            <input
-              id="hoTen"
-              name="hoTen"
-              value={form.hoTen}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <label htmlFor="soDienThoai">Số điện thoại</label>
-            <input
-              id="soDienThoai"
-              name="soDienThoai"
-              value={form.soDienThoai}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <label htmlFor="matKhau">Mật khẩu</label>
-            <input
-              id="matKhau"
-              name="matKhau"
-              type="password"
-              value={form.matKhau}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" className="btn-primary">
-            Đăng ký
-          </button>
-        </form>
-      </div>
-      <img
-        className="page-split-image"
-        src="/img/OIP.jpg"
-        alt="PetCare"
-        onError={(e) => (e.currentTarget.style.display = "none")}
-      />
-    </div>
+      <form onSubmit={handleSubmit}>
+        <div className="form-field">
+          <label htmlFor="hoTen">Họ tên</label>
+          <input
+            id="hoTen"
+            name="hoTen"
+            value={form.hoTen}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="soDienThoai">Số điện thoại</label>
+          <input
+            id="soDienThoai"
+            name="soDienThoai"
+            value={form.soDienThoai}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="matKhau">Mật khẩu</label>
+          <input
+            id="matKhau"
+            name="matKhau"
+            type="password"
+            value={form.matKhau}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" className="btn-primary">
+          Đăng ký
+        </button>
+      </form>
+    </AuthSplit>
   );
 }
 

@@ -1,5 +1,7 @@
 // Trang quên mật khẩu (dành cho khách hàng)
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import AuthSplit from "../components/AuthSplit";
 import { forgotPassword } from "../services/api";
 
 function ForgotPassword() {
@@ -38,68 +40,62 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="page page-split">
-      <h1>Quên mật khẩu</h1>
-      <div className="form-card">
-        <p style={{ marginTop: 0 }}>
-          Nhập email và số điện thoại bạn đã đăng ký để đặt mật khẩu mới.
-        </p>
-        {msg && <div className={`alert alert-${msg.type}`}>{msg.text}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label>Email</label>
-            <input
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <label>Số điện thoại đã đăng ký</label>
-            <input
-              name="soDienThoai"
-              value={form.soDienThoai}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <label>Mật khẩu mới (ít nhất 6 ký tự)</label>
-            <input
-              name="matKhauMoi"
-              type="password"
-              value={form.matKhauMoi}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <label>Nhập lại mật khẩu mới</label>
-            <input
-              name="xacNhan"
-              type="password"
-              value={form.xacNhan}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" className="btn-primary">
-            Đặt lại mật khẩu
-          </button>
-        </form>
-        <p className="form-helper-link">
-          <a href="/dang-nhap">Quay lại đăng nhập</a>
-        </p>
-      </div>
-      <img
-        className="page-split-image"
-        src="/img/th.jpg"
-        alt="PetCare"
-        onError={(e) => (e.currentTarget.style.display = "none")}
-      />
-    </div>
+    <AuthSplit
+      anh="/img/th.jpg"
+      tieuDe="Quên mật khẩu"
+      moTa="Nhập email và số điện thoại bạn đã đăng ký để đặt mật khẩu mới."
+      chanTrang={
+        <>
+          Nhớ mật khẩu rồi? <Link to="/dang-nhap">Đăng nhập</Link>
+        </>
+      }
+    >
+      {msg && <div className={`alert alert-${msg.type}`}>{msg.text}</div>}
+      <form onSubmit={handleSubmit}>
+        <div className="form-field">
+          <label>Email</label>
+          <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label>Số điện thoại đã đăng ký</label>
+          <input
+            name="soDienThoai"
+            value={form.soDienThoai}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label>Mật khẩu mới (ít nhất 6 ký tự)</label>
+          <input
+            name="matKhauMoi"
+            type="password"
+            value={form.matKhauMoi}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-field">
+          <label>Nhập lại mật khẩu mới</label>
+          <input
+            name="xacNhan"
+            type="password"
+            value={form.xacNhan}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" className="btn-primary">
+          Đặt lại mật khẩu
+        </button>
+      </form>
+    </AuthSplit>
   );
 }
 
