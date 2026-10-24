@@ -2296,3 +2296,24 @@ body {
     border-radius: 20px 0 0 20px;
   }
 }
+.chat-goi-y {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px 0;
+}
+
+.chat-goi-y button {
+  background: var(--color-accent-soft);
+  color: var(--color-ink);
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.chat-goi-y button:hover {
+  background: var(--color-accent);
+}
