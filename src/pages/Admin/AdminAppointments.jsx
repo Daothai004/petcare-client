@@ -42,6 +42,11 @@ function AdminAppointments() {
 
   useEffect(() => {
     loadData();
+    // Tự cập nhật mỗi 10 giây (chỉ khi đang xem tab này) để không phải F5
+    const timer = setInterval(() => {
+      if (document.visibilityState === "visible") loadData();
+    }, 10000);
+    return () => clearInterval(timer);
   }, []);
 
   const handleChangeStatus = async (id, trangThaiMoi) => {
