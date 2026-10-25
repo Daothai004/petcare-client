@@ -77,7 +77,7 @@ function MyAppointments() {
   };
 
   return (
-    <div className="page">
+    <div className="page" style={{ maxWidth: 1100 }}>
       <h1>Lịch hẹn của tôi</h1>
       {error && <div className="alert alert-error">{error}</div>}
 
@@ -126,7 +126,7 @@ function MyAppointments() {
                         className="btn-small"
                         onClick={() => moHoaDon(lh)}
                       >
-                        Xem hóa đơn &amp; thanh toán
+                        Hóa đơn &amp; thanh toán
                       </button>
                     )
                   )}
