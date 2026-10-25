@@ -90,6 +90,7 @@ function MyAppointments() {
         <table className="admin-table">
           <thead>
             <tr>
+              <th>Mã</th>
               <th>Thú cưng</th>
               <th>Dịch vụ</th>
               <th>Nhân sự</th>
@@ -102,6 +103,7 @@ function MyAppointments() {
           <tbody>
             {list.map((lh) => (
               <tr key={lh.id}>
+                <td>#{lh.id}</td>
                 <td>{lh.thuCung?.tenThuCung}</td>
                 <td>{lh.dichVu?.tenDichVu}</td>
                 <td>{lh.nhanSu?.hoTen}</td>
@@ -184,7 +186,7 @@ function MyAppointments() {
             ))}
             {list.length === 0 && (
               <tr>
-                <td colSpan="7">Bạn chưa có lịch hẹn nào.</td>
+                <td colSpan="8">Bạn chưa có lịch hẹn nào.</td>
               </tr>
             )}
           </tbody>
