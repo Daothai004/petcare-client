@@ -2300,7 +2300,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 8px 12px 0;
+  padding: 4px 0 8px;
 }
 
 .chat-goi-y button {

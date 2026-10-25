@@ -17,7 +17,8 @@ function goiYTiepTheo(cauHoi, cauTraLoi, dangDatLich) {
   }
 
   const q = cauHoi.toLowerCase();
-
+  if (q.includes("đổi giờ") || q.includes("đổi lịch"))
+    return ["Lịch hẹn sắp tới của tôi", "Hướng dẫn đặt lịch"];
   if (q.includes("gợi ý")) return ["Bảng giá dịch vụ", "Đặt lịch giúp tôi"];
   if (q.includes("giá") || q.includes("dịch vụ"))
     return ["Đặt lịch giúp tôi", "Gợi ý dịch vụ phù hợp"];
@@ -118,18 +119,17 @@ function ChatWidget() {
             {loading && (
               <div className="chat-bubble chat-bubble-bot">Đang trả lời...</div>
             )}
+            {!loading && goiY.length > 0 && (
+              <div className="chat-goi-y">
+                {goiY.map((g) => (
+                  <button type="button" key={g} onClick={() => guiCauHoi(g)}>
+                    {g}
+                  </button>
+                ))}
+              </div>
+            )}
             <div ref={cuoiDanhSach} />
           </div>
-
-          {!loading && goiY.length > 0 && (
-            <div className="chat-goi-y">
-              {goiY.map((g) => (
-                <button type="button" key={g} onClick={() => guiCauHoi(g)}>
-                  {g}
-                </button>
-              ))}
-            </div>
-          )}
 
           <form onSubmit={handleSend} className="chat-input-row">
             <input
