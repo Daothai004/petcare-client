@@ -5,6 +5,7 @@ import {
   getMyAppointments,
   cancelAppointment,
   taoHoaDonTuLichHen,
+  doiGioLichHen,
 } from "../services/api";
 
 const TEN_TRANG_THAI = {
@@ -32,7 +33,9 @@ function MyAppointments() {
   };
   const [list, setList] = useState([]);
   const [error, setError] = useState(null);
-
+  // Đổi giờ: lịch đang mở ô chọn giờ mới và giờ mới đang chọn
+  const [doiGioId, setDoiGioId] = useState(null);
+  const [gioMoi, setGioMoi] = useState("");
   const loadData = () => {
     getMyAppointments()
       .then((res) => setList(res.data))
@@ -42,6 +45,26 @@ function MyAppointments() {
   useEffect(() => {
     loadData();
   }, []);
+
+  const moODoiGio = (lh) => {
+    setDoiGioId(lh.id);
+    setGioMoi(String(lh.thoiGianBatDau).slice(0, 16));
+  };
+
+  const handleDoiGio = async (id) => {
+    if (!gioMoi) {
+      alert("Vui lòng chọn thời gian mới.");
+      return;
+    }
+    try {
+      await doiGioLichHen(id, gioMoi);
+      setDoiGioId(null);
+      loadData();
+      alert("Đã đổi giờ lịch hẹn.");
+    } catch (err) {
+      alert(err.response?.data?.message || "Đổi giờ thất bại.");
+    }
+  };
 
   const handleCancel = async (id) => {
     if (!confirm("Bạn chắc chắn muốn hủy lịch hẹn này?")) return;
@@ -112,12 +135,44 @@ function MyAppointments() {
                   {lh.trangThai !== 2 &&
                     lh.trangThai !== 3 &&
                     !lh.daThanhToan && (
-                      <button
-                        className="btn-small btn-danger"
-                        onClick={() => handleCancel(lh.id)}
-                      >
-                        Hủy lịch
-                      </button>
+                      <>
+                        {doiGioId === lh.id ? (
+                          <>
+                            <input
+                              type="datetime-local"
+                              value={gioMoi}
+                              onChange={(e) => setGioMoi(e.target.value)}
+                            />{" "}
+                            <button
+                              className="btn-small"
+                              onClick={() => handleDoiGio(lh.id)}
+                            >
+                              Lưu
+                            </button>{" "}
+                            <button
+                              className="btn-small"
+                              onClick={() => setDoiGioId(null)}
+                            >
+                              Đóng
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              className="btn-small"
+                              onClick={() => moODoiGio(lh)}
+                            >
+                              Đổi giờ
+                            </button>{" "}
+                            <button
+                              className="btn-small btn-danger"
+                              onClick={() => handleCancel(lh.id)}
+                            >
+                              Hủy lịch
+                            </button>
+                          </>
+                        )}
+                      </>
                     )}
                 </td>
               </tr>

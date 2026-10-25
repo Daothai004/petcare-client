@@ -48,6 +48,8 @@ export const getAllServices = () => api.get("/services/all");
 export const getAppointments = () => api.get("/appointments");
 export const createAppointment = (data) => api.post("/appointments", data);
 export const cancelAppointment = (id) => api.put(`/appointments/${id}/huy`);
+export const doiGioLichHen = (id, thoiGianBatDauMoi) =>
+  api.put(`/appointments/${id}/doi-gio`, { thoiGianBatDauMoi });
 // Cập nhật trạng thái lịch hẹn (xác nhận, hoàn tất...) - chỉ Nhân viên/Admin gọi được
 export const updateAppointmentStatus = (id, trangThai) =>
   api.put(`/appointments/${id}/trang-thai`, { trangThaiMoi: trangThai });
