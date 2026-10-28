@@ -1,7 +1,7 @@
 // trang chủ
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getServices, getStaff } from "../services/api";
+import { getServices, getStaff, getKhuyenMaiDangApDung } from "../services/api";
 import Carousel from "../components/Carousel";
 
 const heroImages = [
@@ -16,6 +16,7 @@ function Home() {
   const [services, setServices] = useState([]);
   const [staff, setStaff] = useState([]);
   const [error, setError] = useState(null);
+  const [khuyenMai, setKhuyenMai] = useState([]);
   const [nhanSuDangXem, setNhanSuDangXem] = useState(null); // nhân sự đang mở modal, null = đang đóng
 
   useEffect(() => {
@@ -24,6 +25,9 @@ function Home() {
       .catch((err) => setError(err.message));
 
     getStaff().then((res) => setStaff(res.data));
+    getKhuyenMaiDangApDung()
+      .then((res) => setKhuyenMai(res.data))
+      .catch(() => {});
   }, []);
 
   return (
@@ -120,7 +124,29 @@ function Home() {
           </p>
         </div>
       </section>
-
+      {khuyenMai.length > 0 && (
+        <section className="section promo-section">
+          <h2 className="section-title">Ưu đãi &amp; giá theo ngày</h2>
+          <p className="section-subtitle">
+            Giá dịch vụ được điều chỉnh theo ngày hẹn và độ đông khách, bạn chọn
+            thời điểm phù hợp nhất để đặt lịch.
+          </p>
+          <div className="promo-grid">
+            {khuyenMai.map((k) => (
+              <div
+                key={k.id}
+                className={`promo-card ${k.phanTram < 0 ? "promo-giam" : "promo-phu"}`}
+              >
+                <div className="promo-badge">
+                  {k.phanTram < 0 ? "Giảm" : "Phụ thu"} {Math.abs(k.phanTram)}%
+                </div>
+                <h3>{k.ten}</h3>
+                <p>{k.moTa}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
       <section id="dich-vu" className="section">
         <h2 className="section-title">Dịch vụ của chúng tôi</h2>
         <p className="section-subtitle">

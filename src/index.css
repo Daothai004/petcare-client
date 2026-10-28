@@ -2317,3 +2317,45 @@ body {
 .chat-goi-y button:hover {
   background: var(--color-accent);
 }
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.promo-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: left;
+}
+
+.promo-card h3 {
+  margin: 10px 0 6px;
+}
+
+.promo-card p {
+  margin: 0;
+  color: var(--color-ink-soft);
+}
+
+.promo-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.promo-giam .promo-badge {
+  background: var(--color-accent-soft);
+  color: var(--color-primary);
+}
+
+.promo-phu .promo-badge {
+  background: #f6dcd8;
+  color: var(--color-error);
+}

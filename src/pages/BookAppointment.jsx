@@ -7,6 +7,7 @@ import {
   getMyPets,
   getStaff,
   datNhieuDichVu,
+  tinhKhuyenMai,
 } from "../services/api";
 
 // Chức vụ có chữ "bác sĩ" -> bác sĩ thú y (khớp với quy tắc ở backend)
@@ -26,6 +27,7 @@ function BookAppointment() {
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [uuDai, setUuDai] = useState({ dieuChinh: [], tongDieuChinh: 0 });
 
   useEffect(() => {
     if (!token) return;
@@ -70,6 +72,16 @@ function BookAppointment() {
   });
   const tamTinh = lichDuKien.reduce((s, l) => s + Number(l.gia), 0);
 
+  // Xem trước khuyến mãi / phụ thu theo ngày hẹn, số dịch vụ và độ đông khách
+  useEffect(() => {
+    if (!thoiGianBatDau || chon.length === 0) {
+      setUuDai({ dieuChinh: [], tongDieuChinh: 0 });
+      return;
+    }
+    tinhKhuyenMai(thoiGianBatDau, chon.length, tamTinh)
+      .then((res) => setUuDai(res.data))
+      .catch(() => setUuDai({ dieuChinh: [], tongDieuChinh: 0 }));
+  }, [thoiGianBatDau, chon.length, tamTinh]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);

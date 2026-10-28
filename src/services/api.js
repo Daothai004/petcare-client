@@ -48,6 +48,13 @@ export const getAllServices = () => api.get("/services/all");
 export const getAppointments = () => api.get("/appointments");
 export const createAppointment = (data) => api.post("/appointments", data);
 export const cancelAppointment = (id) => api.put(`/appointments/${id}/huy`);
+export const getKhuyenMaiDangApDung = () => api.get("/khuyenmai/dang-ap-dung");
+export const tinhKhuyenMai = (ngay, soDichVu, tongTien) =>
+  api.get("/khuyenmai/tinh", { params: { ngay, soDichVu, tongTien } });
+export const getAllKhuyenMai = () => api.get("/khuyenmai");
+export const createKhuyenMai = (data) => api.post("/khuyenmai", data);
+export const updateKhuyenMai = (id, data) => api.put(`/khuyenmai/${id}`, data);
+export const deleteKhuyenMai = (id) => api.delete(`/khuyenmai/${id}`);
 export const doiGioLichHen = (id, thoiGianBatDauMoi) =>
   api.put(`/appointments/${id}/doi-gio`, { thoiGianBatDauMoi });
 // Cập nhật trạng thái lịch hẹn (xác nhận, hoàn tất...) - chỉ Nhân viên/Admin gọi được
