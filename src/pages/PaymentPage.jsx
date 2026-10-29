@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { thanhToanHoaDon, getHoaDon } from "../services/api";
 import HoaDonView from "../components/HoaDonView";
+import { QRCodeSVG } from "qrcode.react";
 
 function PaymentPage() {
   const { id } = useParams();
@@ -25,8 +26,7 @@ function PaymentPage() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setError(null);
     setLoading(true);
     try {
@@ -112,39 +112,13 @@ function PaymentPage() {
             <Link to="/san-pham">chọn sản phẩm</Link> rồi ở bước đặt hàng chọn{" "}
             <strong>&quot;Gộp vào hóa đơn #{id}&quot;</strong>.
           </p>
-
-          <div className="form-card" style={{ maxWidth: "none" }}>
-            {error && <div className="alert alert-error">{error}</div>}
-
-            <form onSubmit={handleSubmit}>
-              <div className="form-field">
-                <label htmlFor="soThe">Số thẻ</label>
-                <input
-                  id="soThe"
-                  name="soThe"
-                  value={form.soThe}
-                  onChange={handleChange}
-                  placeholder="1234 5678 9012 3456"
-                  maxLength={19}
-                  required
-                />
-              </div>
-              <div className="form-field">
-                <label htmlFor="tenChuThe">Tên chủ thẻ</label>
-                <input
-                  id="tenChuThe"
-                  name="tenChuThe"
-                  value={form.tenChuThe}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? "Đang xử lý..." : `Thanh toán ${tongText}`}
-              </button>
-            </form>
-          </div>
+          <ThanhToanQR
+            soTien={hoaDon.tongCong}
+            maThamChieu={`HD${id}`}
+            loading={loading}
+            error={error}
+            onThanhToan={handleSubmit}
+          />
         </div>
       )}
 
@@ -156,3 +130,264 @@ function PaymentPage() {
 }
 
 export default PaymentPage;
+// ===== Cổng thanh toán giả lập (VNPay QR / ví điện tử) =====
+const DANH_SACH_VI = [
+  {
+    id: "VNPAY",
+    ten: "VNPay QR",
+    mau: "#0a4ea3",
+    chu: "VN",
+    moTa: "Quét bằng app ngân hàng",
+  },
+  {
+    id: "MOMO",
+    ten: "Ví MoMo",
+    mau: "#a50064",
+    chu: "Mo",
+    moTa: "Quét bằng app MoMo",
+  },
+  {
+    id: "ZALOPAY",
+    ten: "ZaloPay",
+    mau: "#0068ff",
+    chu: "Zl",
+    moTa: "Quét bằng app ZaloPay",
+  },
+  {
+    id: "SHOPEEPAY",
+    ten: "ShopeePay",
+    mau: "#ee4d2d",
+    chu: "Sp",
+    moTa: "Quét bằng app Shopee",
+  },
+];
+
+export function ThanhToanQR({
+  soTien,
+  maThamChieu,
+  loading,
+  error,
+  onThanhToan,
+}) {
+  const [vi, setVi] = useState("VNPAY");
+  const [buoc, setBuoc] = useState("chon"); // "chon" hoặc "qr"
+  const [conLai, setConLai] = useState(300);
+  const [maGD, setMaGD] = useState("");
+  const [dangXacNhan, setDangXacNhan] = useState(false);
+
+  useEffect(() => {
+    if (buoc !== "qr" || conLai <= 0) return;
+    const t = setTimeout(() => setConLai((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [buoc, conLai]);
+
+  const viChon = DANH_SACH_VI.find((v) => v.id === vi);
+  const tienText = `${Number(soTien).toLocaleString("vi-VN")} đ`;
+  const phut = String(Math.floor(conLai / 60)).padStart(2, "0");
+  const giay = String(conLai % 60).padStart(2, "0");
+  const hetHan = conLai <= 0;
+
+  const taoMa = () => {
+    setMaGD("PC" + Date.now().toString().slice(-10));
+    setConLai(300);
+    setBuoc("qr");
+  };
+
+  const xacNhan = async () => {
+    setDangXacNhan(true);
+    await new Promise((r) => setTimeout(r, 1200));
+    await onThanhToan(vi, maGD);
+    setDangXacNhan(false);
+  };
+
+  const noiDungQR = `PETCARE|${vi}|${maThamChieu}|${soTien}|${maGD}`;
+
+  return (
+    <div className="form-card" style={{ maxWidth: "none" }}>
+      {error && <div className="alert alert-error">{error}</div>}
+      <p
+        style={{
+          fontSize: "0.8rem",
+          color: "var(--color-ink-soft)",
+          marginTop: 0,
+        }}
+      >
+        Cổng thanh toán giả lập phục vụ đồ án, không phát sinh giao dịch thật.
+      </p>
+
+      {buoc === "chon" ? (
+        <>
+          <h3 style={{ marginTop: 0 }}>Chọn phương thức thanh toán</h3>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+              gap: 12,
+            }}
+          >
+            {DANH_SACH_VI.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => setVi(v.id)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "12px 14px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  borderRadius: 12,
+                  background: "#fff",
+                  border:
+                    vi === v.id
+                      ? `2px solid ${v.mau}`
+                      : "2px solid var(--color-line)",
+                }}
+              >
+                <span
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 10,
+                    background: v.mau,
+                    color: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 700,
+                  }}
+                >
+                  {v.chu}
+                </span>
+                <span>
+                  <strong style={{ display: "block" }}>{v.ten}</strong>
+                  <small style={{ color: "var(--color-ink-soft)" }}>
+                    {v.moTa}
+                  </small>
+                </span>
+              </button>
+            ))}
+          </div>
+          <p style={{ margin: "16px 0 8px" }}>
+            Số tiền thanh toán: <strong>{tienText}</strong>
+          </p>
+          <button type="button" className="btn-primary" onClick={taoMa}>
+            Tiếp tục với {viChon.ten}
+          </button>
+        </>
+      ) : (
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              display: "inline-block",
+              padding: "4px 14px",
+              borderRadius: 999,
+              background: viChon.mau,
+              color: "#fff",
+              fontWeight: 600,
+              marginBottom: 12,
+            }}
+          >
+            {viChon.ten}
+          </div>
+
+          <div
+            style={{
+              position: "relative",
+              display: "inline-block",
+              padding: 14,
+              background: "#fff",
+              border: "1px solid var(--color-line)",
+              borderRadius: 14,
+            }}
+          >
+            <QRCodeSVG value={noiDungQR} size={200} level="M" />
+            {hetHan && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "rgba(255,255,255,0.93)",
+                  borderRadius: 14,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: 600,
+                  padding: 12,
+                }}
+              >
+                Mã QR đã hết hạn
+              </div>
+            )}
+          </div>
+
+          <h2 style={{ margin: "12px 0 2px" }}>{tienText}</h2>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "0.85rem",
+              color: "var(--color-ink-soft)",
+            }}
+          >
+            Nội dung: {maThamChieu} · Mã giao dịch: {maGD}
+          </p>
+          <p
+            style={{
+              margin: "8px 0",
+              color: hetHan ? "var(--color-error)" : "var(--color-ink)",
+            }}
+          >
+            {hetHan ? "Vui lòng tạo mã mới" : `Mã hết hạn sau ${phut}:${giay}`}
+          </p>
+          <p
+            style={{
+              fontSize: "0.85rem",
+              color: "var(--color-ink-soft)",
+              maxWidth: 420,
+              margin: "0 auto 14px",
+            }}
+          >
+            Mở ứng dụng {viChon.ten}, chọn quét mã và đối chiếu số tiền. Khi
+            demo, bấm nút bên dưới để mô phỏng việc đã quét và xác nhận thanh
+            toán.
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            {hetHan ? (
+              <button type="button" className="btn-primary" onClick={taoMa}>
+                Tạo mã mới
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-primary"
+                disabled={dangXacNhan || loading}
+                onClick={xacNhan}
+              >
+                {dangXacNhan || loading
+                  ? "Đang chờ ngân hàng xác nhận..."
+                  : "Mô phỏng: tôi đã quét và thanh toán"}
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-outline"
+              disabled={dangXacNhan || loading}
+              onClick={() => setBuoc("chon")}
+            >
+              Đổi ví khác
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

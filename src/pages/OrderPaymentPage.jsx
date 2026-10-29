@@ -1,7 +1,8 @@
 // trang thanh toán cho đơn hàng
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { thanhToanDonHang } from "../services/api";
+import { getMyOrders, thanhToanDonHang } from "../services/api";
+import { ThanhToanQR } from "./PaymentPage";
 
 function OrderPaymentPage() {
   const { id } = useParams();
@@ -10,12 +11,20 @@ function OrderPaymentPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [thanhCong, setThanhCong] = useState(false);
+  const [donHang, setDonHang] = useState(null);
+
+  useEffect(() => {
+    getMyOrders()
+      .then((res) =>
+        setDonHang(res.data.find((d) => d.id === Number(id)) || null),
+      )
+      .catch(() => {});
+  }, [id]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setError(null);
     setLoading(true);
     try {
@@ -50,42 +59,19 @@ function OrderPaymentPage() {
     <div className="page">
       <h1>Thanh toán đơn hàng #{id}</h1>
       <div className="alert alert-success" style={{ marginBottom: 20 }}>
-        Hãy điền thông tin để hoàn tất thanh toán
+        Chọn ví hoặc quét mã QR để hoàn tất thanh toán
       </div>
-
-      <div className="form-card">
-        {error && <div className="alert alert-error">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-field">
-            <label htmlFor="soThe">Số thẻ</label>
-            <input
-              id="soThe"
-              name="soThe"
-              value={form.soThe}
-              onChange={handleChange}
-              placeholder="1234 5678 9012 3456"
-              maxLength={19}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <label htmlFor="tenChuThe">Tên chủ thẻ</label>
-            <input
-              id="tenChuThe"
-              name="tenChuThe"
-              value={form.tenChuThe}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? "Đang xử lý..." : "Xác nhận thanh toán"}
-          </button>
-        </form>
-      </div>
-
+      {donHang ? (
+        <ThanhToanQR
+          soTien={donHang.tongTien}
+          maThamChieu={`DH${id}`}
+          loading={loading}
+          error={error}
+          onThanhToan={handleSubmit}
+        />
+      ) : (
+        <p>Đang tải đơn hàng...</p>
+      )}
       <p style={{ marginTop: 16 }}>
         <Link to="/don-hang-cua-toi">← Quay lại Đơn hàng của tôi</Link>
       </p>
