@@ -96,6 +96,7 @@ function AdminLayout() {
       ten: "Báo cáo & hệ thống",
       muc: [
         { to: "/admin/bao-cao", nhan: "Báo cáo & Excel", hien: true },
+        { to: "/admin/thong-ke", nhan: "Thống kê và phân tích", hien: isAdmin },
         { to: "/admin/phan-hoi", nhan: "Phản hồi", hien: isAdmin },
         { to: "/admin/chatbot-logs", nhan: "Lịch sử Chatbot", hien: isAdmin },
       ],

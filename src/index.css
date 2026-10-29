@@ -2359,3 +2359,312 @@ body {
   background: #f6dcd8;
   color: var(--color-error);
 }
+
+/* ===== Trang thống kê kiểu kính mờ (tk = thống kê) ===== */
+.tk-wrap {
+  position: relative;
+  padding: 28px;
+  border-radius: 22px;
+  color: #fff;
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(242, 166, 90, 0.35),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(154, 209, 194, 0.3),
+      transparent 45%
+    ),
+    linear-gradient(135deg, #10302a 0%, #1f4b43 55%, #2d6256 100%);
+}
+.tk-wrap h1,
+.tk-wrap h2,
+.tk-wrap h3 {
+  color: #fff;
+  margin: 0;
+}
+.tk-wrap h2 {
+  font-size: 1.05rem;
+  margin-bottom: 14px;
+}
+.tk-dau {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.tk-phu {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin: 4px 0 0;
+}
+.tk-doi-ky {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 4px;
+}
+.tk-doi-ky button {
+  background: transparent;
+  color: #fff;
+  border: 0;
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+}
+.tk-doi-ky button.active {
+  background: #fff;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+.tk-glass {
+  background: rgba(255, 255, 255, 0.12);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  margin-bottom: 16px;
+}
+.tk-luoi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+.tk-luoi-2 {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.tk-luoi > .tk-glass {
+  margin-bottom: 0;
+}
+.tk-luoi {
+  margin-bottom: 16px;
+}
+.tk-nhan {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+.tk-so {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin: 4px 0;
+}
+.tk-chip {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.18);
+}
+.tk-chip-len {
+  background: rgba(120, 220, 150, 0.25);
+  color: #b9f5cd;
+}
+.tk-chip-xuong {
+  background: rgba(255, 120, 110, 0.25);
+  color: #ffc9c4;
+}
+.tk-the-dau {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tk-chu-thich {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+.tk-chu-thich i,
+.tk-chu-giai i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin: 0 4px 0 10px;
+}
+.tk-cot-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  overflow-x: auto;
+}
+.tk-cot {
+  flex: 1;
+  min-width: 14px;
+  display: flex;
+  flex-direction: column;
+}
+.tk-cot-track {
+  height: 220px;
+}
+.tk-cot-thap .tk-cot-track {
+  height: 150px;
+}
+.tk-cot-fill {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.tk-cot-fill span {
+  display: block;
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.4s ease;
+}
+.tk-cot:hover .tk-cot-fill span {
+  filter: brightness(1.15);
+}
+.tk-cot-so {
+  text-align: center;
+  font-size: 0.75rem;
+  height: 18px;
+}
+.tk-cot-nhan {
+  display: flex;
+  justify-content: center;
+  height: 20px;
+  font-size: 0.72rem;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+.tk-cot-nhan span {
+  white-space: nowrap;
+}
+.tk-hang {
+  margin-bottom: 14px;
+}
+.tk-hang-dau {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+.tk-hang-nen {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.tk-hang-thanh {
+  height: 100%;
+  background: linear-gradient(90deg, #f2a65a, #f7c98f);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.tk-hang small {
+  opacity: 0.7;
+  font-size: 0.78rem;
+}
+.tk-dong {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.9rem;
+}
+.tk-dong-tong {
+  border-bottom: 0;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 6px;
+}
+.tk-tieu-de-nho {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin: 14px 0 4px !important;
+  font-weight: 600;
+}
+.tk-rong {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+.tk-donut-khung {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.tk-donut {
+  width: 190px;
+  height: 190px;
+}
+.tk-chu-giai {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.88rem;
+  margin-bottom: 8px;
+}
+.tk-chu-giai i {
+  margin: 0;
+}
+.tk-chu-giai small {
+  grid-column: 2 / 4;
+  opacity: 0.65;
+  margin-top: -4px;
+}
+.tk-nhan-dinh p {
+  margin: 8px 0;
+  padding-left: 12px;
+  border-left: 3px solid #f2a65a;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.tk-luu-y {
+  font-size: 0.9rem;
+}
+.tk-dock {
+  position: sticky;
+  bottom: 16px;
+  z-index: 20;
+  width: fit-content;
+  max-width: 100%;
+  margin: 24px auto 0;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(10, 30, 26, 0.72);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  overflow-x: auto;
+}
+.tk-dock button {
+  background: transparent;
+  color: #fff;
+  border: 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+.tk-dock button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+.tk-dock button.active {
+  background: #fff;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+@media (max-width: 700px) {
+  .tk-wrap {
+    padding: 16px;
+    border-radius: 14px;
+  }
+}

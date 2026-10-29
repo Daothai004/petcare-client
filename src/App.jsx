@@ -28,6 +28,7 @@ import AdminSupplies from "./pages/Admin/AdminSupplies";
 import AdminInvoice from "./pages/Admin/AdminInvoice";
 import AdminReports from "./pages/Admin/AdminReports";
 import AdminPromotions from "./pages/Admin/AdminPromotions";
+import AdminStatistics from "./pages/Admin/AdminStatistics";
 import ChatWidget from "./components/ChatWidget";
 import MyAppointments from "./pages/MyAppointments";
 import PaymentPage from "./pages/PaymentPage";
@@ -160,6 +161,14 @@ function App() {
           }
         >
           <Route index element={<AdminDashboard />} />
+          <Route
+            path="thong-ke"
+            element={
+              <ProtectedRoute allowedRoles={["QuanTriVien"]}>
+                <AdminStatistics />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="khuyen-mai"
             element={

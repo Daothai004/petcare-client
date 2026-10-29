@@ -204,5 +204,5 @@ export const getBaoCaoHoaDon = (tuNgay, denNgay) =>
   api.get("/baocao/hoa-don", { params: { tuNgay, denNgay } });
 // Sổ sức khỏe thú cưng (khách hàng chỉ xem)
 export const getSucKhoe = (thuCungId) => api.get(`/suckhoe/${thuCungId}`);
-
+export const getThongKe = (kyHan) => api.get("/thongke", { params: { kyHan } });
 export default api;
