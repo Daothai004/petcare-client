@@ -26,12 +26,12 @@ function PaymentPage() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (phuongThuc, maGiaoDich) => {
     setError(null);
     setLoading(true);
     try {
       await new Promise((r) => setTimeout(r, 900));
-      await thanhToanHoaDon(id);
+      await thanhToanHoaDon(id, { phuongThuc, maGiaoDich });
       setThanhCong(true);
       setTimeout(() => navigate("/lich-hen-cua-toi"), 2200);
     } catch (err) {

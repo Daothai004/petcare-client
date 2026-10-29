@@ -145,7 +145,8 @@ export const getPublicProducts = () => api.get("/products/public");
 export const createOrder = (data) => api.post("/orders", data);
 export const getMyOrders = () => api.get("/orders/mine");
 export const cancelOrder = (id) => api.put(`/orders/${id}/huy`);
-export const thanhToanDonHang = (id) => api.put(`/orders/${id}/thanh-toan`);
+export const thanhToanDonHang = (id, data) =>
+  api.put(`/orders/${id}/thanh-toan`, data);
 
 // Quản lý đơn hàng - Nhân viên/Admin
 export const getAllOrders = () => api.get("/orders");
@@ -191,7 +192,8 @@ export const deleteInvoiceItem = (itemId) =>
 export const datNhieuDichVu = (data) => api.post("/hoadon/dat-lich", data);
 export const getMyInvoices = () => api.get("/hoadon/mine");
 export const getHoaDon = (id) => api.get(`/hoadon/${id}`);
-export const thanhToanHoaDon = (id) => api.put(`/hoadon/${id}/thanh-toan`);
+export const thanhToanHoaDon = (id, data) =>
+  api.put(`/hoadon/${id}/thanh-toan`, data);
 export const taoHoaDonTuLichHen = (lichHenId) =>
   api.post(`/hoadon/tu-lich-hen/${lichHenId}`);
 

@@ -24,12 +24,12 @@ function OrderPaymentPage() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (phuongThuc, maGiaoDich) => {
     setError(null);
     setLoading(true);
     try {
       await new Promise((r) => setTimeout(r, 900));
-      await thanhToanDonHang(id);
+      await thanhToanDonHang(id, { phuongThuc, maGiaoDich });
       setThanhCong(true);
       setTimeout(() => navigate("/don-hang-cua-toi"), 1800);
     } catch (err) {
