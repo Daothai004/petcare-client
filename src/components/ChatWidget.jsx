@@ -32,6 +32,8 @@ function goiYTiepTheo(cauHoi, cauTraLoi, dangDatLich) {
       "Gợi ý đồ dùng cho mèo",
       "Bảng giá dịch vụ",
     ];
+  if (q.includes("đơn hàng") || q.includes("đơn #") || q.includes("đặt hàng"))
+    return ["Đơn hàng của tôi", "Hủy đơn hàng", "Gợi ý thức ăn cho chó"];
   if (q.includes("gợi ý")) return ["Bảng giá dịch vụ", "Đặt lịch giúp tôi"];
   if (q.includes("giá") || q.includes("dịch vụ"))
     return ["Đặt lịch giúp tôi", "Gợi ý dịch vụ phù hợp"];
