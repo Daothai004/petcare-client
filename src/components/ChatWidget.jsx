@@ -1,6 +1,8 @@
 // trang chatbot
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { askChatbot } from "../services/api";
+import { addToCart } from "../services/cart";
 
 const GOI_Y_DAU = [
   "Hướng dẫn đặt lịch",
@@ -19,6 +21,17 @@ function goiYTiepTheo(cauHoi, cauTraLoi, dangDatLich) {
   const q = cauHoi.toLowerCase();
   if (q.includes("đổi giờ") || q.includes("đổi lịch"))
     return ["Lịch hẹn sắp tới của tôi", "Hướng dẫn đặt lịch"];
+  if (
+    q.includes("giỏ") ||
+    q.includes("sản phẩm") ||
+    q.includes("thức ăn") ||
+    q.includes("mua")
+  )
+    return [
+      "Gợi ý thức ăn cho chó",
+      "Gợi ý đồ dùng cho mèo",
+      "Bảng giá dịch vụ",
+    ];
   if (q.includes("gợi ý")) return ["Bảng giá dịch vụ", "Đặt lịch giúp tôi"];
   if (q.includes("giá") || q.includes("dịch vụ"))
     return ["Đặt lịch giúp tôi", "Gợi ý dịch vụ phù hợp"];
@@ -40,17 +53,32 @@ function goiYTiepTheo(cauHoi, cauTraLoi, dangDatLich) {
 
   return GOI_Y_DAU;
 }
-// In đậm đoạn nằm giữa hai dấu ** **
+// In đậm ** ** và biến [chữ](đường dẫn) thành liên kết bấm được
 function dongThanhPhan(s) {
-  return s
-    .split(/(\*\*[^*]+\*\*)/g)
-    .map((p, i) =>
-      p.startsWith("**") && p.endsWith("**") && p.length > 4 ? (
-        <strong key={i}>{p.slice(2, -2)}</strong>
+  return s.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g).map((p, i) => {
+    if (p.startsWith("**") && p.endsWith("**") && p.length > 4) {
+      return <strong key={i}>{p.slice(2, -2)}</strong>;
+    }
+    const lk = p.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (lk) {
+      return lk[2].startsWith("/") ? (
+        <Link key={i} to={lk[2]} className="chat-lien-ket">
+          {lk[1]}
+        </Link>
       ) : (
-        p
-      ),
-    );
+        <a
+          key={i}
+          href={lk[2]}
+          target="_blank"
+          rel="noreferrer"
+          className="chat-lien-ket"
+        >
+          {lk[1]}
+        </a>
+      );
+    }
+    return p;
+  });
 }
 
 // Chia câu trả lời thành đoạn văn và gạch đầu dòng (dấu chân) cho dễ đọc
@@ -138,6 +166,9 @@ function ChatWidget() {
       const nguCanhMoi = res.data.nguCanh ?? null;
       setMessages((prev) => [...prev, { role: "bot", text: cauTraLoi }]);
       setNguCanh(nguCanhMoi);
+      if (res.data.hanhDong?.loai === "them_gio") {
+        addToCart(res.data.hanhDong.sanPhamId, res.data.hanhDong.soLuong);
+      }
       setGoiY(goiYTiepTheo(cauHoi, cauTraLoi, nguCanhMoi !== null));
     } catch {
       setMessages((prev) => [
@@ -169,7 +200,12 @@ function ChatWidget() {
             </button>
           </div>
 
-          <div className="chat-messages">
+          <div
+            className="chat-messages"
+            onClick={(e) =>
+              e.target.closest("a.chat-lien-ket") && setOpen(false)
+            }
+          >
             {messages.map((m, i) => (
               <div
                 key={i}
