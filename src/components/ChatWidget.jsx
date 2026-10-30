@@ -40,7 +40,70 @@ function goiYTiepTheo(cauHoi, cauTraLoi, dangDatLich) {
 
   return GOI_Y_DAU;
 }
+// In đậm đoạn nằm giữa hai dấu ** **
+function dongThanhPhan(s) {
+  return s
+    .split(/(\*\*[^*]+\*\*)/g)
+    .map((p, i) =>
+      p.startsWith("**") && p.endsWith("**") && p.length > 4 ? (
+        <strong key={i}>{p.slice(2, -2)}</strong>
+      ) : (
+        p
+      ),
+    );
+}
 
+// Chia câu trả lời thành đoạn văn và gạch đầu dòng (dấu chân) cho dễ đọc
+function NoiDungChat({ text }) {
+  let dong = String(text)
+    .split("\n")
+    .map((d) => d.trim())
+    .filter(Boolean);
+
+  // Câu trả lời dài viết liền một khối: tự tách theo câu
+  if (dong.length === 1 && dong[0].length > 150) {
+    const cau = dong[0]
+      .replace(/([^\d\s][.!?])\s+/g, "$1\n")
+      .split("\n")
+      .map((c) => c.trim())
+      .filter(Boolean);
+    if (cau.length >= 3) {
+      const cuoi = cau[cau.length - 1];
+      const laCauHoi = cuoi.endsWith("?");
+      const giua = laCauHoi ? cau.slice(1, -1) : cau.slice(1);
+      dong = [
+        cau[0],
+        ...giua.map((c) => "- " + c),
+        ...(laCauHoi ? [cuoi] : []),
+      ];
+    }
+  }
+
+  // Gom các dòng bắt đầu bằng "- " thành một danh sách
+  const khoi = [];
+  dong.forEach((d) => {
+    if (/^[-•]\s+/.test(d)) {
+      const muc = d.replace(/^[-•]\s+/, "");
+      const truoc = khoi[khoi.length - 1];
+      if (truoc && truoc.loai === "ds") truoc.muc.push(muc);
+      else khoi.push({ loai: "ds", muc: [muc] });
+    } else {
+      khoi.push({ loai: "doan", noiDung: d });
+    }
+  });
+
+  return khoi.map((k, i) =>
+    k.loai === "ds" ? (
+      <ul className="chat-ds" key={i}>
+        {k.muc.map((m, j) => (
+          <li key={j}>{dongThanhPhan(m)}</li>
+        ))}
+      </ul>
+    ) : (
+      <p key={i}>{dongThanhPhan(k.noiDung)}</p>
+    ),
+  );
+}
 function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -111,9 +174,8 @@ function ChatWidget() {
               <div
                 key={i}
                 className={`chat-bubble ${m.role === "user" ? "chat-bubble-user" : "chat-bubble-bot"}`}
-                style={{ whiteSpace: "pre-line" }}
               >
-                {m.text}
+                {m.role === "bot" ? <NoiDungChat text={m.text} /> : m.text}
               </div>
             ))}
             {loading && (
