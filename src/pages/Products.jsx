@@ -41,8 +41,10 @@ function Products() {
   const [cartCount, setCartCount] = useState(getCartCount());
 
   // Chi tiết sản phẩm mở theo địa chỉ ?xem=ID (để chatbot cũng gửi được đường dẫn tới đúng sản phẩm)
-  const xemId = Number(params.get("xem")) || null;
-  const spDangXem = list.find((s) => s.id === xemId) || null;
+  const xemId = params.get("xem");
+  const spDangXem = xemId
+    ? list.find((s) => String(s.id) === xemId) || null
+    : null;
   const moChiTiet = (id) => setParams({ xem: id });
   const dongChiTiet = () => setParams({});
 
