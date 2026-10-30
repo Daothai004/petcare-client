@@ -8,6 +8,7 @@ const TEN_TRANG_THAI = {
   1: "Đang giao",
   2: "Đã giao",
   3: "Đã hủy",
+  4: "Hoàn trả",
 };
 
 function MyOrders() {
@@ -65,7 +66,12 @@ function MyOrders() {
                   </ul>
                 </td>
                 <td>{dh.tongTien.toLocaleString("vi-VN")}đ</td>
-                <td>{TEN_TRANG_THAI[dh.trangThai]}</td>
+                <td>
+                  {TEN_TRANG_THAI[dh.trangThai]}
+                  {dh.lyDoHuyHoan && (
+                    <div style={{ fontSize: 12 }}>Lý do: {dh.lyDoHuyHoan}</div>
+                  )}
+                </td>
                 <td>
                   {dh.daThanhToan ? (
                     <span
@@ -73,8 +79,7 @@ function MyOrders() {
                     >
                       Đã thanh toán
                     </span>
-                  ) : dh.hinhThucThanhToan === "Online" &&
-                    dh.trangThai !== 3 ? (
+                  ) : dh.hinhThucThanhToan === "Online" && dh.trangThai < 3 ? (
                     <Link
                       to={
                         dh.hoaDonId

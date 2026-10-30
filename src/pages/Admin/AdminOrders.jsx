@@ -4,6 +4,7 @@ import {
   getAllOrders,
   updateOrderStatus,
   cancelOrder,
+  hoanTraDonHang,
   thanhToanDonHang,
 } from "../../services/api";
 
@@ -31,15 +32,27 @@ function AdminOrders() {
   };
 
   const handleCancel = async (id) => {
-    if (!confirm("Hủy đơn hàng này?")) return;
+    const lyDo = prompt("Lý do hủy đơn (có thể để trống):");
+    if (lyDo === null) return;
     try {
-      await cancelOrder(id);
+      await cancelOrder(id, lyDo);
       loadData();
     } catch (err) {
       alert(err.response?.data?.message || "Hủy đơn thất bại.");
     }
   };
-
+  const handleReturn = async (id) => {
+    const lyDo = prompt(
+      "Lý do hoàn trả (ví dụ: khách từ chối nhận hàng, không liên lạc được):",
+    );
+    if (lyDo === null) return;
+    try {
+      await hoanTraDonHang(id, lyDo);
+      loadData();
+    } catch (err) {
+      alert(err.response?.data?.message || "Hoàn trả thất bại.");
+    }
+  };
   const handleMarkPaid = async (id) => {
     if (!confirm("Xác nhận đơn hàng này đã được thanh toán?")) return;
     try {
@@ -95,7 +108,7 @@ function AdminOrders() {
                   ) : (
                     <>
                       <div>Chưa TT ({dh.hinhThucThanhToan})</div>
-                      {dh.trangThai !== 3 && (
+                      {dh.trangThai < 3 && (
                         <button
                           className="btn-small"
                           onClick={() => handleMarkPaid(dh.id)}
@@ -107,8 +120,17 @@ function AdminOrders() {
                   )}
                 </td>
                 <td>
-                  {dh.trangThai === 3 ? (
-                    "Đã hủy"
+                  {dh.trangThai === 3 || dh.trangThai === 4 ? (
+                    <div>
+                      <strong>
+                        {dh.trangThai === 3 ? "Đã hủy" : "Hoàn trả"}
+                      </strong>
+                      {dh.lyDoHuyHoan && (
+                        <div style={{ fontSize: 12 }}>
+                          Lý do: {dh.lyDoHuyHoan}
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <select
                       value={dh.trangThai}
@@ -123,7 +145,7 @@ function AdminOrders() {
                   )}
                 </td>
                 <td className="admin-table-actions">
-                  {dh.trangThai !== 3 && (
+                  {(dh.trangThai === 0 || dh.trangThai === 1) && (
                     <button
                       className="btn-small btn-danger"
                       onClick={() => handleCancel(dh.id)}
@@ -131,6 +153,15 @@ function AdminOrders() {
                       Hủy
                     </button>
                   )}
+                  {(dh.trangThai === 1 || dh.trangThai === 2) &&
+                    !dh.hoaDonId && (
+                      <button
+                        className="btn-small"
+                        onClick={() => handleReturn(dh.id)}
+                      >
+                        Hoàn trả
+                      </button>
+                    )}
                 </td>
               </tr>
             ))}

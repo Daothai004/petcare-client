@@ -144,7 +144,8 @@ export const getPublicProducts = () => api.get("/products/public");
 // Đơn hàng
 export const createOrder = (data) => api.post("/orders", data);
 export const getMyOrders = () => api.get("/orders/mine");
-export const cancelOrder = (id) => api.put(`/orders/${id}/huy`);
+export const cancelOrder = (id, lyDo) => api.put(`/orders/${id}/huy`, { lyDo });
+export const hoanTraDonHang = (id, lyDo) => api.put(`/orders/${id}/hoan-tra`, { lyDo });
 export const thanhToanDonHang = (id, data) =>
   api.put(`/orders/${id}/thanh-toan`, data);
 
