@@ -44,6 +44,7 @@ function MyOrders() {
         <table className="admin-table">
           <thead>
             <tr>
+              <th>Mã</th>
               <th>Ngày đặt</th>
               <th>Sản phẩm</th>
               <th>Tổng tiền</th>
@@ -55,6 +56,7 @@ function MyOrders() {
           <tbody>
             {list.map((dh) => (
               <tr key={dh.id}>
+                <td>#{dh.id}</td>
                 <td>{new Date(dh.ngayDat).toLocaleString("vi-VN")}</td>
                 <td>
                   <ul style={{ margin: 0, paddingLeft: 18 }}>
@@ -108,7 +110,7 @@ function MyOrders() {
             ))}
             {list.length === 0 && (
               <tr>
-                <td colSpan="6">Bạn chưa có đơn hàng nào.</td>
+                <td colSpan="7">Bạn chưa có đơn hàng nào.</td>
               </tr>
             )}
           </tbody>

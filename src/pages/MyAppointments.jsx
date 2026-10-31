@@ -94,7 +94,8 @@ function MyAppointments() {
               <th>Thú cưng</th>
               <th>Dịch vụ</th>
               <th>Nhân sự</th>
-              <th>Thời gian</th>
+              <th>Giờ hẹn</th>
+              <th>Đặt lúc</th>
               <th>Trạng thái</th>
               <th>Thanh toán</th>
               <th>Hành động</th>
@@ -108,6 +109,11 @@ function MyAppointments() {
                 <td>{lh.dichVu?.tenDichVu}</td>
                 <td>{lh.nhanSu?.hoTen}</td>
                 <td>{new Date(lh.thoiGianBatDau).toLocaleString("vi-VN")}</td>
+                <td>
+                  {lh.ngayTao && new Date(lh.ngayTao).getFullYear() > 2000
+                    ? new Date(lh.ngayTao).toLocaleString("vi-VN")
+                    : "-"}
+                </td>
                 <td>{TEN_TRANG_THAI[lh.trangThai]}</td>
                 <td>
                   {lh.daThanhToan ? (
@@ -186,7 +192,7 @@ function MyAppointments() {
             ))}
             {list.length === 0 && (
               <tr>
-                <td colSpan="8">Bạn chưa có lịch hẹn nào.</td>
+                <td colSpan="9">Bạn chưa có lịch hẹn nào.</td>
               </tr>
             )}
           </tbody>
