@@ -171,7 +171,14 @@ function ChatWidget() {
       if (res.data.hanhDong?.loai === "them_gio") {
         addToCart(res.data.hanhDong.sanPhamId, res.data.hanhDong.soLuong);
       }
-      setGoiY(goiYTiepTheo(cauHoi, cauTraLoi, nguCanhMoi !== null));
+      // Ngữ cảnh tư vấn ("TV|...") chỉ lưu loài/tuổi thú cưng, không phải đang đặt lịch dở
+      setGoiY(
+        goiYTiepTheo(
+          cauHoi,
+          cauTraLoi,
+          nguCanhMoi !== null && !String(nguCanhMoi).startsWith("TV|"),
+        ),
+      );
     } catch {
       setMessages((prev) => [
         ...prev,
