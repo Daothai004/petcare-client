@@ -1,6 +1,6 @@
 // trang đặt lịch: chọn NHIỀU dịch vụ; nhân sự để hệ thống tự sắp xếp (mặc định) hoặc tự chọn
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AuthSplit from "../components/AuthSplit";
 import {
   getServices,
@@ -15,6 +15,7 @@ const laBacSi = (n) => (n.chucVu || "").toLowerCase().includes("bác sĩ");
 
 function BookAppointment() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const token = localStorage.getItem("token");
 
   const [services, setServices] = useState([]);
@@ -37,6 +38,13 @@ function BookAppointment() {
         setServices(resServices.data);
         setPets(resPets.data);
         setStaff(resStaff.data);
+        // Đường dẫn từ chatbot: /dat-lich?dichVu=ID chọn sẵn dịch vụ đó
+        const dichVuSan = Number(params.get("dichVu"));
+        if (dichVuSan && resServices.data.some((d) => d.id === dichVuSan)) {
+          setChon((truoc) =>
+            truoc.length > 0 ? truoc : [{ dichVuId: dichVuSan, nhanSuId: "" }],
+          );
+        }
       })
       .catch((err) => setError("Không tải được dữ liệu: " + err.message));
   }, [token]);

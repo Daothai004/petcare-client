@@ -89,7 +89,15 @@ function NoiDungChat({ text }) {
     .split("\n")
     .map((d) => d.trim())
     .filter(Boolean);
-
+  // Dòng liên kết dịch vụ do máy chủ thêm ở cuối: không tham gia tách câu
+  let lienKet = [];
+  if (
+    dong.length > 1 &&
+    /^(\[Xem dịch vụ|Xem chi tiết dịch vụ)/.test(dong[dong.length - 1])
+  ) {
+    lienKet = [dong[dong.length - 1]];
+    dong = dong.slice(0, -1);
+  }
   // Câu trả lời dài viết liền một khối: tự tách theo câu
   if (dong.length === 1 && dong[0].length > 150) {
     const cau = dong[0]
@@ -108,7 +116,7 @@ function NoiDungChat({ text }) {
       ];
     }
   }
-
+  dong = [...dong, ...lienKet];
   // Gom các dòng bắt đầu bằng "- " thành một danh sách
   const khoi = [];
   dong.forEach((d) => {
