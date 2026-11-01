@@ -3023,3 +3023,49 @@ body {
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* ===== Trang sản phẩm: lưới nhiều cột, thẻ gọn ===== */
+.sp-trang {
+  max-width: 1200px;
+}
+.sp-luoi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 18px;
+}
+.sp-the {
+  max-width: none;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sp-the .sp-anh-the {
+  height: 150px;
+}
+.sp-the .sp-ten {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.sp-hang-nut-the {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 6px;
+}
+.sp-hang-nut-the input {
+  width: 56px;
+}
+@media (max-width: 600px) {
+  .sp-luoi {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .sp-the {
+    padding: 12px;
+  }
+  .sp-the .sp-anh-the {
+    height: 110px;
+  }
+}

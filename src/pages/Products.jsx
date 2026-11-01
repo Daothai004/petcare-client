@@ -108,7 +108,7 @@ function Products() {
     : [];
 
   return (
-    <div className="page">
+    <div className="page sp-trang">
       <div
         style={{
           display: "flex",
@@ -167,19 +167,9 @@ function Products() {
         <p className="sp-dem">Tìm thấy {hienThi.length} sản phẩm</p>
       )}
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: 20,
-        }}
-      >
+      <div className="sp-luoi">
         {hienThi.map((sp) => (
-          <div
-            key={sp.id}
-            className="form-card"
-            style={{ display: "flex", flexDirection: "column", gap: 8 }}
-          >
+          <div key={sp.id} className="form-card sp-the">
             <div className="sp-bam-xem" onClick={() => moChiTiet(sp.id)}>
               <AnhSanPham sp={sp} lop="sp-anh-the" />
             </div>
@@ -199,7 +189,7 @@ function Products() {
             </strong>
 
             {sp.soLuongTon > 0 ? (
-              <div style={{ display: "flex", gap: 8 }}>
+              <div className="sp-hang-nut-the">
                 <input
                   type="number"
                   min="1"
