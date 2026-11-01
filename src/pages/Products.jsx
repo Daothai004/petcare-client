@@ -1,5 +1,6 @@
-// Trang sản phẩm cho khách: tìm kiếm, lọc, sắp xếp, xem chi tiết và thêm vào giỏ hàng
-import { useEffect, useMemo, useState } from "react";
+// Trang sản phẩm cho khách: mục "Tất cả" hiển thị theo từng hàng trượt ngang,
+// các mục còn lại hiển thị dạng lưới. Có tìm kiếm, lọc, sắp xếp, xem chi tiết và thêm vào giỏ hàng.
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getPublicProducts } from "../services/api";
 import { addToCart, getCartCount } from "../services/cart";
@@ -8,6 +9,14 @@ const TEN_LOAI = {
   ThucAn: "Thức ăn",
   PhuKien: "Phụ kiện",
   DoDungChamSoc: "Đồ dùng chăm sóc",
+};
+
+const THU_TU_LOAI = ["ThucAn", "PhuKien", "DoDungChamSoc"];
+
+const MO_TA_LOAI = {
+  ThucAn: "Dinh dưỡng đúng loài, đúng độ tuổi",
+  PhuKien: "Vòng cổ, lồng, chuồng, đồ chơi và nhiều hơn",
+  DoDungChamSoc: "Tắm gội, vệ sinh và chăm sóc hằng ngày",
 };
 
 // Bỏ dấu tiếng Việt để gõ "thuc an" vẫn tìm ra "Thức ăn"
@@ -28,6 +37,76 @@ function AnhSanPham({ sp, lop }) {
   );
 }
 
+// Một hàng sản phẩm trượt ngang, có nút mũi tên trái và phải
+function HangTruot({ tieuDe, moTa, ds, theSanPham, onXemTatCa }) {
+  const duongRef = useRef(null);
+  const [canTrai, setCanTrai] = useState(false);
+  const [canPhai, setCanPhai] = useState(true);
+
+  const capNhat = () => {
+    const el = duongRef.current;
+    if (!el) return;
+    setCanTrai(el.scrollLeft > 4);
+    setCanPhai(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    capNhat();
+    window.addEventListener("resize", capNhat);
+    return () => window.removeEventListener("resize", capNhat);
+  }, [ds]);
+
+  const truot = (huong) => {
+    const el = duongRef.current;
+    if (!el) return;
+    el.scrollBy({ left: huong * Math.max(el.clientWidth * 0.85, 240), behavior: "smooth" });
+  };
+
+  return (
+    <section className="sp-hang">
+      <div className="sp-hang-dau">
+        <div>
+          <h2 className="sp-hang-tieu-de">{tieuDe}</h2>
+          <p className="sp-hang-mo-ta">
+            {moTa ? `${moTa} · ` : ""}
+            {ds.length} sản phẩm
+          </p>
+        </div>
+        <div className="sp-hang-dieu-khien">
+          <button type="button" className="sp-xem-tat-ca" onClick={onXemTatCa}>
+            Xem tất cả
+          </button>
+          <button
+            type="button"
+            className="sp-mui-ten"
+            onClick={() => truot(-1)}
+            disabled={!canTrai}
+            aria-label="Trượt sang trái"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            className="sp-mui-ten"
+            onClick={() => truot(1)}
+            disabled={!canPhai}
+            aria-label="Trượt sang phải"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+      <div className="sp-hang-duong" ref={duongRef} onScroll={capNhat}>
+        {ds.map((sp) => (
+          <div className="sp-o-truot" key={sp.id}>
+            {theSanPham(sp)}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Products() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -42,9 +121,7 @@ function Products() {
 
   // Chi tiết sản phẩm mở theo địa chỉ ?xem=ID (để chatbot cũng gửi được đường dẫn tới đúng sản phẩm)
   const xemId = params.get("xem");
-  const spDangXem = xemId
-    ? list.find((s) => String(s.id) === xemId) || null
-    : null;
+  const spDangXem = xemId ? list.find((s) => String(s.id) === xemId) || null : null;
   const moChiTiet = (id) => setParams({ xem: id });
   const dongChiTiet = () => setParams({});
 
@@ -68,9 +145,7 @@ function Products() {
       .filter((s) => {
         if (loai && s.loai !== loai) return false;
         if (chiConHang && s.soLuongTon <= 0) return false;
-        const noiDung = boDau(
-          `${s.tenSanPham} ${s.moTa || ""} ${TEN_LOAI[s.loai] || ""}`,
-        );
+        const noiDung = boDau(`${s.tenSanPham} ${s.moTa || ""} ${TEN_LOAI[s.loai] || ""}`);
         return cacTu.every((t) => noiDung.includes(t));
       })
       .sort((a, b) => {
@@ -80,8 +155,7 @@ function Products() {
       });
   }, [list, tuKhoa, loai, chiConHang, sapXep]);
 
-  const laySoLuong = (sp) =>
-    Math.min(Math.max(Number(soLuongChon[sp.id]) || 1, 1), sp.soLuongTon);
+  const laySoLuong = (sp) => Math.min(Math.max(Number(soLuongChon[sp.id]) || 1, 1), sp.soLuongTon);
 
   const themVaoGio = (sp) => {
     addToCart(sp.id, laySoLuong(sp));
@@ -102,30 +176,66 @@ function Products() {
   };
 
   const cungLoai = spDangXem
-    ? list
-        .filter((s) => s.loai === spDangXem.loai && s.id !== spDangXem.id)
-        .slice(0, 3)
+    ? list.filter((s) => s.loai === spDangXem.loai && s.id !== spDangXem.id).slice(0, 3)
     : [];
+
+  // Các nhóm xuất hiện trong mục "Tất cả": thứ tự cố định, nhóm lạ (nếu có) xếp sau cùng
+  const cacLoai = [
+    ...THU_TU_LOAI,
+    ...Array.from(new Set(hienThi.map((s) => s.loai))).filter((l) => !THU_TU_LOAI.includes(l)),
+  ];
+
+  // Thẻ sản phẩm dùng chung cho lưới và hàng trượt
+  const theSanPham = (sp) => (
+    <div key={sp.id} className="form-card sp-the">
+      <div className="sp-bam-xem sp-anh-khung" onClick={() => moChiTiet(sp.id)}>
+        <AnhSanPham sp={sp} lop="sp-anh-the" />
+        {sp.soLuongTon <= 0 && <span className="sp-nhan sp-nhan-het">Hết hàng</span>}
+        {sp.soLuongTon > 0 && sp.soLuongTon <= 5 && <span className="sp-nhan sp-nhan-sap">Sắp hết</span>}
+      </div>
+      <span className="sp-loai-nho">{TEN_LOAI[sp.loai] ?? sp.loai}</span>
+      <strong className="sp-bam-xem sp-ten" onClick={() => moChiTiet(sp.id)}>
+        {sp.tenSanPham}
+      </strong>
+      {sp.moTa && <p className="sp-mo-ta-ngan">{sp.moTa}</p>}
+      <strong className="sp-gia-the">
+        {GIA(sp.gia)}
+        {sp.donViTinh ? ` / ${sp.donViTinh}` : ""}
+      </strong>
+
+      {sp.soLuongTon > 0 ? (
+        <div className="sp-hang-nut-the">
+          <input
+            type="number"
+            min="1"
+            max={sp.soLuongTon}
+            value={soLuongChon[sp.id] ?? 1}
+            onChange={(e) => setSoLuongChon({ ...soLuongChon, [sp.id]: e.target.value })}
+            style={{ width: 60 }}
+          />
+          <button className="btn-small" onClick={() => themVaoGio(sp)}>
+            Thêm vào giỏ
+          </button>
+          <button className="btn-small btn-outline" onClick={() => moChiTiet(sp.id)}>
+            Chi tiết
+          </button>
+        </div>
+      ) : (
+        <span style={{ color: "#c0392b", fontWeight: 600 }}>Hết hàng</span>
+      )}
+    </div>
+  );
 
   return (
     <div className="page sp-trang">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h1 style={{ margin: 0 }}>Sản phẩm cho thú cưng</h1>
         <Link to="/gio-hang" className="btn-accent">
           Giỏ hàng ({cartCount})
         </Link>
       </div>
 
-      {thongBao && !spDangXem && (
-        <div className="alert alert-success">{thongBao}</div>
-      )}
+      {thongBao && !spDangXem && <div className="alert alert-success">{thongBao}</div>}
 
       <div className="sp-thanh-cong-cu">
         <input
@@ -144,80 +254,39 @@ function Products() {
 
       <div className="sp-chips">
         {[["", "Tất cả"], ...Object.entries(TEN_LOAI)].map(([ma, ten]) => (
-          <button
-            key={ma}
-            type="button"
-            className={loai === ma ? "active" : ""}
-            onClick={() => setLoai(ma)}
-          >
+          <button key={ma} type="button" className={loai === ma ? "active" : ""} onClick={() => setLoai(ma)}>
             {ten}
           </button>
         ))}
         <label className="sp-con-hang">
-          <input
-            type="checkbox"
-            checked={chiConHang}
-            onChange={(e) => setChiConHang(e.target.checked)}
-          />
+          <input type="checkbox" checked={chiConHang} onChange={(e) => setChiConHang(e.target.checked)} />
           Chỉ hiện còn hàng
         </label>
       </div>
 
-      {list.length > 0 && (
-        <p className="sp-dem">Tìm thấy {hienThi.length} sản phẩm</p>
+      {list.length > 0 && <p className="sp-dem">Tìm thấy {hienThi.length} sản phẩm</p>}
+
+      {loai === "" ? (
+        // Mục "Tất cả": mỗi nhóm một hàng trượt ngang
+        <div className="sp-cac-hang">
+          {cacLoai.map((ma) => {
+            const ds = hienThi.filter((s) => s.loai === ma);
+            if (ds.length === 0) return null;
+            return (
+              <HangTruot
+                key={ma}
+                tieuDe={TEN_LOAI[ma] ?? ma}
+                moTa={MO_TA_LOAI[ma]}
+                ds={ds}
+                theSanPham={theSanPham}
+                onXemTatCa={() => setLoai(ma)}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className="sp-luoi">{hienThi.map(theSanPham)}</div>
       )}
-
-      <div className="sp-luoi">
-        {hienThi.map((sp) => (
-          <div key={sp.id} className="form-card sp-the">
-            <div className="sp-bam-xem" onClick={() => moChiTiet(sp.id)}>
-              <AnhSanPham sp={sp} lop="sp-anh-the" />
-            </div>
-            <span style={{ fontSize: 12, color: "var(--color-ink-soft)" }}>
-              {TEN_LOAI[sp.loai] ?? sp.loai}
-            </span>
-            <strong
-              className="sp-bam-xem sp-ten"
-              onClick={() => moChiTiet(sp.id)}
-            >
-              {sp.tenSanPham}
-            </strong>
-            {sp.moTa && <p className="sp-mo-ta-ngan">{sp.moTa}</p>}
-            <strong style={{ color: "var(--color-accent, #c0392b)" }}>
-              {GIA(sp.gia)}
-              {sp.donViTinh ? ` / ${sp.donViTinh}` : ""}
-            </strong>
-
-            {sp.soLuongTon > 0 ? (
-              <div className="sp-hang-nut-the">
-                <input
-                  type="number"
-                  min="1"
-                  max={sp.soLuongTon}
-                  value={soLuongChon[sp.id] ?? 1}
-                  onChange={(e) =>
-                    setSoLuongChon({ ...soLuongChon, [sp.id]: e.target.value })
-                  }
-                  style={{ width: 60 }}
-                />
-                <button className="btn-small" onClick={() => themVaoGio(sp)}>
-                  Thêm vào giỏ
-                </button>
-                <button
-                  className="btn-small btn-outline"
-                  onClick={() => moChiTiet(sp.id)}
-                >
-                  Chi tiết
-                </button>
-              </div>
-            ) : (
-              <span style={{ color: "#c0392b", fontWeight: 600 }}>
-                Hết hàng
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
 
       {list.length === 0 && <p>Hiện chưa có sản phẩm nào.</p>}
       {list.length > 0 && hienThi.length === 0 && (
@@ -232,38 +301,25 @@ function Products() {
       {spDangXem && (
         <div className="sp-nen-mo" onClick={dongChiTiet}>
           <div className="sp-hop" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className="sp-dong"
-              onClick={dongChiTiet}
-              aria-label="Đóng"
-            >
+            <button type="button" className="sp-dong" onClick={dongChiTiet} aria-label="Đóng">
               ✕
             </button>
             <div className="sp-hop-anh">
               <AnhSanPham sp={spDangXem} lop="sp-anh-lon" />
             </div>
             <div className="sp-hop-noi-dung">
-              <span className="sp-loai">
-                {TEN_LOAI[spDangXem.loai] ?? spDangXem.loai}
-              </span>
+              <span className="sp-loai">{TEN_LOAI[spDangXem.loai] ?? spDangXem.loai}</span>
               <h2>{spDangXem.tenSanPham}</h2>
               <div className="sp-gia">
                 {GIA(spDangXem.gia)}
                 {spDangXem.donViTinh ? ` / ${spDangXem.donViTinh}` : ""}
               </div>
               <p className={spDangXem.soLuongTon > 0 ? "sp-con" : "sp-het"}>
-                {spDangXem.soLuongTon > 0
-                  ? `Còn ${spDangXem.soLuongTon} sản phẩm trong kho`
-                  : "Tạm hết hàng"}
+                {spDangXem.soLuongTon > 0 ? `Còn ${spDangXem.soLuongTon} sản phẩm trong kho` : "Tạm hết hàng"}
               </p>
-              <p className="sp-mo-ta">
-                {spDangXem.moTa || "Sản phẩm chưa có mô tả chi tiết."}
-              </p>
+              <p className="sp-mo-ta">{spDangXem.moTa || "Sản phẩm chưa có mô tả chi tiết."}</p>
 
-              {thongBao && (
-                <div className="alert alert-success">{thongBao}</div>
-              )}
+              {thongBao && <div className="alert alert-success">{thongBao}</div>}
 
               {spDangXem.soLuongTon > 0 && (
                 <div className="sp-hang-nut">
@@ -272,25 +328,12 @@ function Products() {
                     min="1"
                     max={spDangXem.soLuongTon}
                     value={soLuongChon[spDangXem.id] ?? 1}
-                    onChange={(e) =>
-                      setSoLuongChon({
-                        ...soLuongChon,
-                        [spDangXem.id]: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setSoLuongChon({ ...soLuongChon, [spDangXem.id]: e.target.value })}
                   />
-                  <button
-                    type="button"
-                    className="btn-outline"
-                    onClick={() => themVaoGio(spDangXem)}
-                  >
+                  <button type="button" className="btn-outline" onClick={() => themVaoGio(spDangXem)}>
                     Thêm vào giỏ
                   </button>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    onClick={() => muaNgay(spDangXem)}
-                  >
+                  <button type="button" className="btn-primary" onClick={() => muaNgay(spDangXem)}>
                     Mua ngay
                   </button>
                 </div>
@@ -301,11 +344,7 @@ function Products() {
                   <div className="sp-lien-quan-tieu-de">Sản phẩm cùng loại</div>
                   <div className="sp-lien-quan">
                     {cungLoai.map((s) => (
-                      <button
-                        type="button"
-                        key={s.id}
-                        onClick={() => moChiTiet(s.id)}
-                      >
+                      <button type="button" key={s.id} onClick={() => moChiTiet(s.id)}>
                         <strong>{s.tenSanPham}</strong>
                         <span>{GIA(s.gia)}</span>
                       </button>
