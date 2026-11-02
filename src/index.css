@@ -3235,3 +3235,35 @@ body {
     max-width: 240px;
   }
 }
+
+/* ===== Giá khuyến mãi sản phẩm ===== */
+.sp-gia-cu {
+  display: block;
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 400;
+  text-decoration: line-through;
+}
+.sp-gia-moi {
+  color: var(--color-accent, #c0392b);
+}
+.sp-nhan-giam {
+  left: auto;
+  right: 8px;
+  background: #c0392b;
+}
+
+/* ===== Ưu đãi sản phẩm: dòng chú thích dưới giá ===== */
+.sp-uu-dai-dang {
+  display: block;
+  color: #c0392b;
+  font-weight: 600;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+.sp-uu-dai-them {
+  display: block;
+  color: #2f7d4f;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}

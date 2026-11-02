@@ -28,6 +28,7 @@ import AdminSupplies from "./pages/Admin/AdminSupplies";
 import AdminInvoice from "./pages/Admin/AdminInvoice";
 import AdminReports from "./pages/Admin/AdminReports";
 import AdminPromotions from "./pages/Admin/AdminPromotions";
+import AdminProductOffers from "./pages/Admin/AdminProductOffers";
 import AdminStatistics from "./pages/Admin/AdminStatistics";
 import ChatWidget from "./components/ChatWidget";
 import MyAppointments from "./pages/MyAppointments";
@@ -178,7 +179,14 @@ function App() {
             }
           />
           <Route path="lich-hen" element={<AdminAppointments />} />
-
+          <Route
+            path="uu-dai-san-pham"
+            element={
+              <ProtectedRoute allowedRoles={["QuanTriVien"]}>
+                <AdminProductOffers />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="benh-an"
             element={

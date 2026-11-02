@@ -1,7 +1,12 @@
 // trang giỏ hàng + đặt hàng (có thể gộp vào hóa đơn dịch vụ)
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { getPublicProducts, createOrder, getMyInvoices } from "../services/api";
+import {
+  getPublicProducts,
+  createOrder,
+  getMyInvoices,
+  baoGiaSanPham,
+} from "../services/api";
 import {
   getCartItems,
   updateCartQty,
@@ -20,6 +25,7 @@ function Cart() {
   const [hoaDonId, setHoaDonId] = useState(""); // "" = thanh toán riêng
   const [error, setError] = useState(null);
   const [dangGui, setDangGui] = useState(false);
+  const [baoGia, setBaoGia] = useState({});
 
   useEffect(() => {
     setItems(getCartItems());
@@ -38,16 +44,32 @@ function Cart() {
         .catch(() => {});
     }
   }, []);
-
+  // Báo giá từ máy chủ: đã gồm ưu đãi theo số lượng, theo ngày và theo dịch vụ khách đang có
+  useEffect(() => {
+    if (items.length === 0) {
+      setBaoGia({});
+      return;
+    }
+    baoGiaSanPham(
+      items.map((i) => ({ sanPhamId: i.sanPhamId, soLuong: i.soLuong })),
+    )
+      .then((res) =>
+        setBaoGia(
+          Object.fromEntries(res.data.dong.map((d) => [d.sanPhamId, d])),
+        ),
+      )
+      .catch(() => {});
+  }, [items]);
   const chiTiet = items
     .map((i) => {
       const sp = products.find((p) => p.id === i.sanPhamId);
       return sp ? { ...i, sanPham: sp } : null;
     })
     .filter(Boolean);
-
+  const donGiaCua = (i) =>
+    baoGia[i.sanPhamId]?.donGia ?? (i.sanPham.giaBan || i.sanPham.gia);
   const tongTien = chiTiet.reduce(
-    (sum, i) => sum + i.sanPham.gia * i.soLuong,
+    (sum, i) => sum + donGiaCua(i) * i.soLuong,
     0,
   );
 
@@ -124,7 +146,19 @@ function Cart() {
               {chiTiet.map((i) => (
                 <tr key={i.sanPhamId}>
                   <td>{i.sanPham.tenSanPham}</td>
-                  <td>{i.sanPham.gia.toLocaleString("vi-VN")}đ</td>
+                  <td>
+                    {donGiaCua(i) < i.sanPham.gia && (
+                      <span className="sp-gia-cu">
+                        {i.sanPham.gia.toLocaleString("vi-VN")}đ
+                      </span>
+                    )}
+                    {donGiaCua(i).toLocaleString("vi-VN")}đ
+                    {baoGia[i.sanPhamId]?.uuDai?.length > 0 && (
+                      <small className="sp-uu-dai-dang">
+                        {baoGia[i.sanPhamId].uuDai.join(", ")}
+                      </small>
+                    )}
+                  </td>
                   <td>
                     <input
                       type="number"
@@ -137,9 +171,7 @@ function Cart() {
                       style={{ width: 60 }}
                     />
                   </td>
-                  <td>
-                    {(i.sanPham.gia * i.soLuong).toLocaleString("vi-VN")}đ
-                  </td>
+                  <td>{(donGiaCua(i) * i.soLuong).toLocaleString("vi-VN")}đ</td>
                   <td>
                     <button
                       type="button"

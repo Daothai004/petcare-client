@@ -55,6 +55,14 @@ export const getAllKhuyenMai = () => api.get("/khuyenmai");
 export const createKhuyenMai = (data) => api.post("/khuyenmai", data);
 export const updateKhuyenMai = (id, data) => api.put(`/khuyenmai/${id}`, data);
 export const deleteKhuyenMai = (id) => api.delete(`/khuyenmai/${id}`);
+export const getUuDaiDangApDung = () => api.get("/uudaisanpham/dang-ap-dung");
+export const getAllUuDaiSanPham = () => api.get("/uudaisanpham");
+export const createUuDaiSanPham = (data) => api.post("/uudaisanpham", data);
+export const updateUuDaiSanPham = (id, data) =>
+  api.put(`/uudaisanpham/${id}`, data);
+export const deleteUuDaiSanPham = (id) => api.delete(`/uudaisanpham/${id}`);
+export const baoGiaSanPham = (items) =>
+  api.post("/uudaisanpham/bao-gia", items);
 export const doiGioLichHen = (id, thoiGianBatDauMoi) =>
   api.put(`/appointments/${id}/doi-gio`, { thoiGianBatDauMoi });
 // Cập nhật trạng thái lịch hẹn (xác nhận, hoàn tất...) - chỉ Nhân viên/Admin gọi được
@@ -145,7 +153,8 @@ export const getPublicProducts = () => api.get("/products/public");
 export const createOrder = (data) => api.post("/orders", data);
 export const getMyOrders = () => api.get("/orders/mine");
 export const cancelOrder = (id, lyDo) => api.put(`/orders/${id}/huy`, { lyDo });
-export const hoanTraDonHang = (id, lyDo) => api.put(`/orders/${id}/hoan-tra`, { lyDo });
+export const hoanTraDonHang = (id, lyDo) =>
+  api.put(`/orders/${id}/hoan-tra`, { lyDo });
 export const thanhToanDonHang = (id, data) =>
   api.put(`/orders/${id}/thanh-toan`, data);
 

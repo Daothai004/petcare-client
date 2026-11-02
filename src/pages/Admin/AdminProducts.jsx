@@ -12,6 +12,9 @@ const RONG = {
   loai: "ThucAn",
   donViTinh: "",
   gia: "",
+  giaKhuyenMai: "",
+  khuyenMaiTuNgay: "",
+  khuyenMaiDenNgay: "",
   soLuongTon: "",
   moTa: "",
   hinhAnh: "",
@@ -59,6 +62,9 @@ function AdminProducts() {
     const data = {
       ...form,
       gia: Number(form.gia) || 0,
+      giaKhuyenMai: form.giaKhuyenMai === "" ? null : Number(form.giaKhuyenMai),
+      khuyenMaiTuNgay: form.khuyenMaiTuNgay || null,
+      khuyenMaiDenNgay: form.khuyenMaiDenNgay || null,
       soLuongTon: Number(form.soLuongTon) || 0,
     };
 
@@ -81,6 +87,13 @@ function AdminProducts() {
       loai: sp.loai,
       donViTinh: sp.donViTinh ?? "",
       gia: sp.gia,
+      giaKhuyenMai: sp.giaKhuyenMai ?? "",
+      khuyenMaiTuNgay: sp.khuyenMaiTuNgay
+        ? sp.khuyenMaiTuNgay.slice(0, 10)
+        : "",
+      khuyenMaiDenNgay: sp.khuyenMaiDenNgay
+        ? sp.khuyenMaiDenNgay.slice(0, 10)
+        : "",
       soLuongTon: sp.soLuongTon,
       moTa: sp.moTa ?? "",
       hinhAnh: sp.hinhAnh ?? "",
@@ -131,6 +144,32 @@ function AdminProducts() {
           onChange={handleChange}
           required
         />
+        <input
+          name="giaKhuyenMai"
+          type="number"
+          min="0"
+          placeholder="Giá khuyến mãi (để trống nếu không có)"
+          value={form.giaKhuyenMai}
+          onChange={handleChange}
+        />
+        <label style={{ fontSize: 13 }}>
+          Từ ngày{" "}
+          <input
+            name="khuyenMaiTuNgay"
+            type="date"
+            value={form.khuyenMaiTuNgay}
+            onChange={handleChange}
+          />
+        </label>
+        <label style={{ fontSize: 13 }}>
+          Đến ngày{" "}
+          <input
+            name="khuyenMaiDenNgay"
+            type="date"
+            value={form.khuyenMaiDenNgay}
+            onChange={handleChange}
+          />
+        </label>
         <input
           name="soLuongTon"
           type="number"
@@ -222,6 +261,11 @@ function AdminProducts() {
                 <td>{sp.tenSanPham}</td>
                 <td>{TEN_LOAI[sp.loai] ?? sp.loai}</td>
                 <td>
+                  {sp.giaKhuyenMai ? (
+                    <div style={{ color: "#c0392b", fontSize: 12 }}>
+                      KM: {sp.giaKhuyenMai.toLocaleString("vi-VN")}đ
+                    </div>
+                  ) : null}
                   {sp.gia.toLocaleString("vi-VN")}đ
                   {sp.donViTinh ? ` / ${sp.donViTinh}` : ""}
                 </td>

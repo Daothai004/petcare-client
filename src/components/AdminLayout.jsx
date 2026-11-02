@@ -86,6 +86,11 @@ function AdminLayout() {
       muc: [
         { to: "/admin/dich-vu", nhan: "Dịch vụ", hien: isAdmin },
         { to: "/admin/khuyen-mai", nhan: "Khuyến mãi", hien: isAdmin },
+        {
+          to: "/admin/uu-dai-san-pham",
+          nhan: "Ưu đãi sản phẩm",
+          hien: isAdmin,
+        },
         { to: "/admin/nhan-su", nhan: "Nhân sự", hien: isAdmin },
         { to: "/admin/tai-khoan", nhan: "Tài khoản nhân viên", hien: isAdmin },
         { to: "/admin/khach-hang", nhan: "Khách hàng", hien: isAdmin },
