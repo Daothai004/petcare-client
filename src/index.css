@@ -919,7 +919,7 @@ a {
   gap: 8px;
 }
 
-.chat-input-row input {
+.chat-input-row textarea {
   flex: 1;
   padding: 8px 10px;
   border: 1px solid var(--color-line);
@@ -2733,13 +2733,23 @@ body {
 .chat-input-row {
   padding: 12px;
 }
-.chat-input-row input {
+.chat-input-row textarea {
   padding: 11px 14px;
   font-size: 1rem;
 }
 .chat-input-row button {
   padding: 11px 18px;
   font-size: 0.95rem;
+}
+.chat-input-row {
+  align-items: flex-end;
+}
+.chat-input-row textarea {
+  resize: none;
+  line-height: 1.45;
+  max-height: 140px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 @media (max-width: 600px) {
   .chat-widget {

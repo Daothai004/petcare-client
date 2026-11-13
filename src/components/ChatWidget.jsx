@@ -155,12 +155,19 @@ function ChatWidget() {
   // Thông tin đặt lịch đang dở do server trả về, gửi lại ở lượt sau để bot nhớ mạch trò chuyện
   const [nguCanh, setNguCanh] = useState(null);
   const cuoiDanhSach = useRef(null);
+  const oNhapRef = useRef(null);
   const [goiY, setGoiY] = useState(GOI_Y_DAU);
 
   useEffect(() => {
     cuoiDanhSach.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
-
+  // Ô nhập tự cao lên theo nội dung (tối đa 140px, dài hơn thì cuộn trong ô)
+  useEffect(() => {
+    const el = oNhapRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 140) + "px";
+  }, [input, open]);
   const guiCauHoi = async (noiDung) => {
     const cauHoi = noiDung.trim();
     if (!cauHoi || loading) return;
@@ -200,7 +207,13 @@ function ChatWidget() {
       setLoading(false);
     }
   };
-
+  // Enter = gửi, Shift+Enter = xuống dòng (bỏ qua khi đang gõ dấu tiếng Việt dở)
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      guiCauHoi(input);
+    }
+  };
   const handleSend = (e) => {
     e.preventDefault();
     guiCauHoi(input);
@@ -247,9 +260,12 @@ function ChatWidget() {
           </div>
 
           <form onSubmit={handleSend} className="chat-input-row">
-            <input
+            <textarea
+              ref={oNhapRef}
+              rows={1}
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Nhập câu hỏi..."
             />
             <button type="submit">Gửi</button>
